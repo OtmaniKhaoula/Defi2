@@ -1,12 +1,10 @@
 import operator
 import numpy as np
-import graphics
 
 reviews_grades = np.load("processed_data/reviews_grades.npy", allow_pickle=True).item()
 reviews_users = np.load("processed_data/reviews_users.npy", allow_pickle=True).item()
 movie_grades = np.load("processed_data/movie_grades.npy", allow_pickle=True).item()
 corpus = np.load("processed_data/corpus.npy", allow_pickle=True).item()
-
 
 def get_mean_grades():
     mean_grade = 0
@@ -41,13 +39,37 @@ def get_grades_repartition_by_movie():
         
     return grades_repartition_by_movie
 
-if __name__ == "__main__" 
+def get_grades_by_user():
+    grades_by_user = {}
+    for key in reviews_users:
+        if not reviews_users[key] in grades_by_user:
+            grades_by_user[reviews_users[key]] = []
+        
+        grades_by_user[reviews_users[key]].append(reviews_grades[key])
+        
+    return grades_by_user 
+
+def get_grades_repartition_by_user(grades_by_user):
+    grades_repartition_by_user = {}
+
+    for key in reviews_users:
+        if not key in grades_repartition_by_user:
+            grades_repartition_by_user[reviews_users[key]] = []
+
+        for value in np.arange(0.5, 5.5, 0.5):       
+            grades_repartition_by_user[reviews_users[key]].append((grades_by_user[reviews_users[key]].count(value), value))
+        
+    return grades_repartition_by_user
+
+if __name__ == "__main__":
     mean_note_by_movie = get_mean_grades_by_movie()
     distrib_notes = get_grades_repartition()
     distrib_notes_by_movie = get_grades_repartition_by_movie()
+    grades_by_user = get_grades_by_user()
+    get_grades_repartition_by_user(grades_by_user)
 
     # Répartition des notes (données apprentissage)
-    graphics.graph_repartition_note(distrib_notes)
-    graphics.graph_repartition_by_movie(distrib_notes_by_movie, 4)
+    #graphics.graph_repartition_note(distrib_notes)
+    #graphics.graph_repartition_by_movie(distrib_notes_by_movie, 4)
     print("finished")
 

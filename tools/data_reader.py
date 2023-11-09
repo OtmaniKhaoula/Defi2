@@ -6,6 +6,7 @@ root = tree.getroot()
 
 reviews_grades = {} #dictionnaire des review_id -> notes
 reviews_users = {}
+reviews_movie = {}
 movie_grades = {}
 corpus = {}
 
@@ -22,6 +23,7 @@ def gen_dicts():
 
         #map review with it's grade
         reviews_grades[review_id] = note
+        reviews_movie[review_id] = movie_id
         reviews_users[review_id] = user_id
         corpus[review_id] = commentaire
 
@@ -32,6 +34,7 @@ def gen_dicts():
             movie_grades[movie_id] = [note]
 
     np.save("processed_data/movie_grades.npy", movie_grades)
+    np.save("processed_data/reviews_movie.npy", movie_grades)
     np.save("processed_data/reviews_grades.npy", reviews_grades)
     np.save("processed_data/reviews_users.npy", reviews_users)
     np.save("processed_data/corpus.npy", corpus)
