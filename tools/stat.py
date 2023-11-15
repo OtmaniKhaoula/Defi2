@@ -1,10 +1,12 @@
 import operator
 import numpy as np
+import graphics
+import data_processing
 
-reviews_grades = np.load("processed_data/reviews_grades.npy", allow_pickle=True).item()
-reviews_users = np.load("processed_data/reviews_users.npy", allow_pickle=True).item()
-movie_grades = np.load("processed_data/movie_grades.npy", allow_pickle=True).item()
-corpus = np.load("processed_data/corpus.npy", allow_pickle=True).item()
+reviews_grades = np.load("../processed_data/reviews_grades.npy", allow_pickle=True).item()
+reviews_users = np.load("../processed_data/reviews_users.npy", allow_pickle=True).item()
+movie_grades = np.load("../processed_data/movie_grades.npy", allow_pickle=True).item()
+corpus = np.load("../processed_data/corpus.npy", allow_pickle=True).item()
 
 def get_mean_grades():
     mean_grade = 0
@@ -69,7 +71,22 @@ if __name__ == "__main__":
     get_grades_repartition_by_user(grades_by_user)
 
     # Répartition des notes (données apprentissage)
-    #graphics.graph_repartition_note(distrib_notes)
-    #graphics.graph_repartition_by_movie(distrib_notes_by_movie, 4)
+    graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
+    graphics.graph_repartition_by(distrib_notes_by_movie, 4, "films (données d'apprentissage)")
+    graphics.graph_repartition_by(grades_by_user, 4, "utilisateurs (données d'apprentissage)")
+    
+    new_corpus = data_processing.preprocessing_text(corpus)
+    
+    freq = graphics.frequence(new_corpus)
+    
+    keys = list(corpus.keys())[0:3000]
+    dictionnaire = {}
+    for key in keys:
+        dictionnaire[key] = corpus[key]
+    new_dictionnaire = data_processing.preprocessing_text(dictionnaire)
+        
+    freq = graphics.frequence(new_dictionnaire)
+    graphics.graph_repartition(freq, "mots les plus fréquents (données apprentissage)")
+    
     print("finished")
 

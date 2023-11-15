@@ -1,7 +1,7 @@
 import numpy as np
 import xml.etree.ElementTree as ET
 
-tree = ET.parse('data/train.xml')
+tree = ET.parse('../data/train.xml')
 root = tree.getroot()
 
 reviews_grades = {} #dictionnaire des review_id -> notes
@@ -9,8 +9,6 @@ reviews_users = {}
 reviews_movie = {}
 movie_grades = {}
 corpus = {}
-
-
 
 def gen_dicts():
     for comment in root.findall("comment"):
@@ -33,10 +31,10 @@ def gen_dicts():
         else:
             movie_grades[movie_id] = [note]
 
-    np.save("processed_data/movie_grades.npy", movie_grades)
-    np.save("processed_data/reviews_movie.npy", movie_grades)
-    np.save("processed_data/reviews_grades.npy", reviews_grades)
-    np.save("processed_data/reviews_users.npy", reviews_users)
-    np.save("processed_data/corpus.npy", corpus)
+    np.save("../processed_data/movie_grades.npy", movie_grades)
+    np.save("../processed_data/reviews_movie.npy", movie_grades)
+    np.save("../processed_data/reviews_grades.npy", reviews_grades)
+    np.save("../processed_data/reviews_users.npy", reviews_users)
+    np.save("../processed_data/corpus.npy", corpus)
 
 gen_dicts()
