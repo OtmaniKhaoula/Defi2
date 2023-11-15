@@ -23,7 +23,8 @@ def graph_repartition_by(distrib_notes, n, titre):
     
     # Récupérer les films qu'on veut intégrer dans le graphique 
     films = list(distrib_notes.keys())[0:4]
-    print("films = ", films)
+    #print("films = ", films)
+    #print(distrib_notes[films[0]])
     
     barWidth = 0.075
     colors = ['#00FFA1', '#00FFD0', '#00FAFF', '#00E1FF', '#00AEFF', '#0098FF', '#007FFF', '#0065FF', '#004CFF', '#3100CD']

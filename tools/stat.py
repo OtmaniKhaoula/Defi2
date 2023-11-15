@@ -2,6 +2,7 @@ import operator
 import numpy as np
 import graphics
 import data_processing
+#from wordcloud import WordCloud
 
 reviews_grades = np.load("../processed_data/reviews_grades.npy", allow_pickle=True).item()
 reviews_users = np.load("../processed_data/reviews_users.npy", allow_pickle=True).item()
@@ -63,17 +64,20 @@ def get_grades_repartition_by_user(grades_by_user):
         
     return grades_repartition_by_user
 
+#def word_cloud():
+    
+
 if __name__ == "__main__":
     mean_note_by_movie = get_mean_grades_by_movie()
     distrib_notes = get_grades_repartition()
     distrib_notes_by_movie = get_grades_repartition_by_movie()
     grades_by_user = get_grades_by_user()
-    get_grades_repartition_by_user(grades_by_user)
+    distrib_notes_by_user = get_grades_repartition_by_user(grades_by_user)
 
     # Répartition des notes (données apprentissage)
     graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
-    graphics.graph_repartition_by(distrib_notes_by_movie, 4, "films (données d'apprentissage)")
-    graphics.graph_repartition_by(grades_by_user, 4, "utilisateurs (données d'apprentissage)")
+    graphics.graph_repartition_by(distrib_notes_by_movie, 4, " films (données d'apprentissage)")
+    graphics.graph_repartition_by(distrib_notes_by_user, 4, " utilisateurs (données d'apprentissage)")
     
     new_corpus = data_processing.preprocessing_text(corpus)
     
