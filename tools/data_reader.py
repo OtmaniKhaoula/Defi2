@@ -1,8 +1,13 @@
 import numpy as np
 import xml.etree.ElementTree as ET
 import data_processing
+import time
+import sys
 
-tree = ET.parse('../data/train.xml')
+file = sys.argv[1] #file to read
+to_save_folder = sys.argv[2] #fodler to save the the produced files
+
+tree = ET.parse(file)
 root = tree.getroot()
 
 reviews_grades = {} #dictionnaire des review_id -> notes
@@ -33,11 +38,13 @@ def gen_dicts():
             movie_grades[movie_id] = [note]
 
     cleaned_corpus = data_processing.preprocessing_text(corpus)
+    fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades)
 
-    np.save("../processed_data/movie_grades.npy", movie_grades)
-    np.save("../processed_data/reviews_movie.npy", movie_grades)
-    np.save("../processed_data/reviews_grades.npy", reviews_grades)
-    np.save("../processed_data/reviews_users.npy", reviews_users)
-    np.save("../processed_data/corpus.npy", cleaned_corpus)
+    np.save(f"../processed_data/{to_save_folder}/movie_grades.npy", movie_grades)
+    np.save(f"../processed_data/{to_save_folder}/reviews_movie.npy", reviews_movie)
+    np.save(f"../processed_data/{to_save_folder}/reviews_grades.npy", reviews_grades)
+    np.save(f"../processed_data/{to_save_folder}/reviews_users.npy", reviews_users)
+    np.save(f"../processed_data/{to_save_folder}.npy", cleaned_corpus)
+
 
 gen_dicts()

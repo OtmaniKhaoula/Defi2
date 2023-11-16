@@ -11,6 +11,7 @@ import nltk
 import string
 import spacy
 import tqdm
+import csv
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 
@@ -50,5 +51,34 @@ def preprocessing_text(dict_comments):
     
     return new_dict_comments
 
+
+def preprocessing_fasttext(dict_comments, notes):
+    training_data = []
+
+    with open('../processed_data/train.tsv', 'w', newline='') as f:
+        for key, text in tqdm.tqdm(dict_comments.items()):
+            if(text == None):
+                training_data.append([key, ""])
+                continue
+            
+            #Tokenization
+            words = word_tokenize(text,language="french",preserve_line=True)
+
+            #Lemmatisation
+            #words=nlp(" ".join(words))
+
+            #Création d'une liste vide pour aceullir les mots sans ponctutation
+            clean_words = []
+
+            #Enlever la ponctuation et les stopwords:
+            for w in words:
+                if str(w).isalpha() and w not in stopwords:
+                    clean_words.append(w.lower())
+
+            txt = " ".join(clean_words)
+            row = "__label__"+str(notes[key])+" "+txt
+
+            output = csv.writer(f, delimiter='\t')
+            output.writerow([row])
 
 
