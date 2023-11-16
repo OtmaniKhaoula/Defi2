@@ -52,10 +52,10 @@ def preprocessing_text(dict_comments):
     return new_dict_comments
 
 
-def preprocessing_fasttext(dict_comments, notes):
+def preprocessing_fasttext(dict_comments, notes, folder):
     training_data = []
 
-    with open('../processed_data/train.tsv', 'w', newline='') as f:
+    with open(f'../processed_data/{folder}/data.tsv', 'w', newline='') as f:
         for key, text in tqdm.tqdm(dict_comments.items()):
             if(text == None):
                 training_data.append([key, ""])

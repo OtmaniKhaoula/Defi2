@@ -38,7 +38,7 @@ def gen_dicts():
             movie_grades[movie_id] = [note]
 
     cleaned_corpus = data_processing.preprocessing_text(corpus)
-    fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades)
+    fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades, to_save_folder)
 
     np.save(f"../processed_data/{to_save_folder}/movie_grades.npy", movie_grades)
     np.save(f"../processed_data/{to_save_folder}/reviews_movie.npy", reviews_movie)
