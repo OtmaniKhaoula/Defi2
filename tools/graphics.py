@@ -8,7 +8,9 @@ Created on Thu Nov  9 11:47:27 2023
 import matplotlib.pyplot as plt
 from nltk import word_tokenize
 import pandas as pd 
+import config
 
+path = config.paths['url']
 # Répartition des notes (données apprentissage)
 def graph_repartition(distrib_notes, titre):
     plt.bar(range(10), list(distrib_notes.values()), width = 0.6, color = 'red',  edgecolor = 'black', linewidth = 2,  ecolor = 'magenta', capsize = 10)
@@ -16,7 +18,7 @@ def graph_repartition(distrib_notes, titre):
     plt.title("Répartition des " + titre)
     plt.xlabel("Notes")
     plt.ylabel("Effectifs")
-    plt.savefig(f"../graphs/{titre}.png")
+    plt.savefig(f"{path}/graphs/{titre}.png")
 
 # Répartition des notes par films (n: nombre de film qu'on veut mettre dans le graphique)
 # titre: préciser si c'est par films ou par utilisateur et si c'est sur les données d'apprentissage ou de validation
@@ -42,7 +44,7 @@ def graph_repartition_by(distrib_notes, n, titre):
 
     plt.xticks([r + barWidth*5 for r in range(len(y))], [key for key in films])
     plt.title('Notes')
-    plt.savefig(f"../graphs/{titre}.png")
+    plt.savefig(f"{path}/graphs/{titre}.png")
     
 # Récupérer le nombre de commentaires par films (nombre de lignes associées à chaque films)
 

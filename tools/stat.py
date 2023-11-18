@@ -4,14 +4,15 @@ import graphics
 import data_processing
 import time
 import sys
+import config
 
-
+path = config.paths['url']
 folder_to_load = sys.argv[1]
 
-reviews_grades = np.load(f"{folder_to_load}reviews_grades.npy", allow_pickle=True).item()
-reviews_users = np.load(f"{folder_to_load}reviews_users.npy", allow_pickle=True).item()
-movie_grades = np.load(f"{folder_to_load}movie_grades.npy", allow_pickle=True).item()
-corpus = np.load(f"{folder_to_load}comments.npy", allow_pickle=True).item()
+reviews_grades = np.load(f"{path}/processed_data/{folder_to_load}/reviews_grades.npy", allow_pickle=True).item()
+reviews_users = np.load(f"{path}/processed_data/{folder_to_load}/reviews_users.npy", allow_pickle=True).item()
+movie_grades = np.load(f"{path}/processed_data/{folder_to_load}/movie_grades.npy", allow_pickle=True).item()
+corpus = np.load(f"{path}/processed_data/{folder_to_load}/comments.npy", allow_pickle=True).item()
 
 def get_mean_grades():
     mean_grade = 0

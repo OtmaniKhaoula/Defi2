@@ -2,12 +2,20 @@ import numpy as np
 import xml.etree.ElementTree as ET
 import data_processing
 import time
-import sys
+import sys, os
 
-file = sys.argv[1] #file to read
-to_save_folder = sys.argv[2] #fodler to save the the produced files
 
-tree = ET.parse(file)
+directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(directory)
+print("DIRECTORY", directory)
+
+import config
+
+path = config.paths['url']
+
+file = sys.argv[1] #file to read train, dev or test
+
+tree = ET.parse(f"{path}/data/{file}.xml")
 root = tree.getroot()
 
 reviews_grades = {} #dictionnaire des review_id -> notes
@@ -37,14 +45,14 @@ def gen_dicts():
         else:
             movie_grades[movie_id] = [note]
 
-    #cleaned_corpus = data_processing.preprocessing_text(corpus)
-    fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades, to_save_folder)
+    cleaned_corpus = data_processing.preprocessing_text(corpus)
+    fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades, file)
 
-    np.save(f"../processed_data/{to_save_folder}/movie_grades.npy", movie_grades)
-    np.save(f"../processed_data/{to_save_folder}/reviews_movie.npy", reviews_movie)
-    np.save(f"../processed_data/{to_save_folder}/reviews_grades.npy", reviews_grades)
-    np.save(f"../processed_data/{to_save_folder}/reviews_users.npy", reviews_users)
-    #np.save(f"../processed_data/{to_save_folder}/comments.npy", cleaned_corpus)
+    np.save(f"{path}/processed_data/{file}/movie_grades.npy", movie_grades)
+    np.save(f"{path}/processed_data/{file}/reviews_movie.npy", reviews_movie)
+    np.save(f"{path}/processed_data/{file}/reviews_grades.npy", reviews_grades)
+    np.save(f"{path}/processed_data/{file}/reviews_users.npy", reviews_users)
+    np.save(f"{path}/processed_data/{file}/comments.npy", cleaned_corpus)
 
 
 def gen_test_corpus():
@@ -55,10 +63,10 @@ def gen_test_corpus():
         corpus[review_id] = commentaire
 
     cleaned_corpus = data_processing.preprocessing_test(corpus)
-    np.save(f"../processed_data/{to_save_folder}/comments.npy", cleaned_corpus)
+    np.save(f"{path}/processed_data/{file}/comments.npy", cleaned_corpus)
 
 
-if not to_save_folder == 'test':
+if not file == 'test':
     gen_dicts()
 else:
     gen_test_corpus()
