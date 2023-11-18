@@ -69,7 +69,6 @@ def get_grades_repartition_by_user(grades_by_user):
         
     return grades_repartition_by_user
 
-#def word_cloud():
 def frequence(corpus):
     words_freq = {}
     for key in corpus.keys():
@@ -81,8 +80,89 @@ def frequence(corpus):
     
     return words_freq   
 
+# Statistiques sur les notes pour chaque film / utilisateurs
+def stat_et_mean(grades):
+    dict_stat = {}
+    for key in grades:
+        dict_stat[key] = {}
+        dict_stat[key]["mean"] = np.mean(grades[key])
+        dict_stat[key]["std"] = np.std(grades[key])
+        dict_stat[key]["nb_note"] = len((grades[key]))
+        dict_stat[key]["min"] = np.min(grades[key])
+        dict_stat[key]["max"] = np.max(grades[key])
+
+    return dict_stat
+
+def length_comments(corpus):
+    length_word = {}
+    length_char = {}
+    for key in corpus.keys():
+        length_word[key] = len(corpus[key])
+        length_char[key] = len(" ".join(corpus[key]))
+    return length_char, length_word
+
+# Corrélation de Pearson (entre deux variables quanti)
+def corr_quant(reviews_grades, length_comments):
+    notes = []
+    lengths = []
+    for key in reviews_grades:
+        notes.append(reviews_grades[key])
+        lengths.append(length_comments[key])
+    # Calcul corrélation     
+    pearson = scipy.stats.pearsonr(notes, lengths).pvalue
+
+    return pearson
+
+def most_frequent_words_and_their_mean_grade(reviews_grades, corpus):
+    mean_grade_by_words = {}
+
+    for key in corpus:
+        for word in corpus[key]:
+            if word not in mean_grade_by_words:
+                mean_grade_by_words[word] = [word, reviews_grades[key], 1]
+            else:
+                mean_grade_by_words[word][2] += 1
+                mean_grade_by_words[word][1] += reviews_grades[key]
+    
+    for key in mean_grade_by_words:
+        mean_grade_by_words[key][1] = mean_grade_by_words[key][1]/mean_grade_by_words[key][2]
+    
+    i = 0
+    for key in mean_grade_by_words:
+        if i == 10:
+            break
+        
+        print(mean_grade_by_words[key])
+        i += 1
+
+    mean_grade_by_words = dict(sorted(mean_grade_by_words.items(), key=lambda item: item[1][2], reverse=True))
+
+    i = 0
+    for key in mean_grade_by_words:
+        if i == 10:
+            break
+        
+        print(mean_grade_by_words[key])
+        i+= 1
+    return mean_grade_by_words
+
+# Récupérer les commentaires et les notes et récupérer les stats pour les 10 mots les plus fréquents 
+def stats_frequent_words(reviews_grades, corpus, list_words):
+    notes_by_words = {}
+
+    for key in corpus:
+        for words in list_words:
+            if(notes_by_words[words] is None):
+                notes_by_words[words] = 0
+            if(words in corpus[key]):
+                notes_by_words[words] += 1
+
+    return notes_by_words
+
+
 if __name__ == "__main__":
     a = time.time()
+    ####### Generating data structures #######
     mean_note_by_movie = get_mean_grades_by_movie()
     distrib_notes = get_grades_repartition()
     distrib_notes_by_movie = get_grades_repartition_by_movie()
@@ -92,8 +172,14 @@ if __name__ == "__main__":
     print("TIME:", b-a)
 
     a = time.time()
+
+    comments_char, comments_words = length_comments(corpus)
+    p = corr_quant(reviews_grades, comments_words)
+    most_frequent_words_and_their_mean_grade(reviews_grades, corpus)
+    print("Pearson coefficient correlation: ", p)
+    exit()
     
-    # Répartition des notes (données apprentissage)
+    ######## Generating graphs ########
     graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
     graphics.graph_repartition_by(distrib_notes_by_movie, 4, " films (données d'apprentissage)")
     graphics.graph_repartition_by(distrib_notes_by_user, 4, " utilisateurs (données d'apprentissage)")
@@ -107,4 +193,3 @@ if __name__ == "__main__":
 
 
     print("finished")
-

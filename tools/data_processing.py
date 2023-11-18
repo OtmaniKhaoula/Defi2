@@ -15,20 +15,17 @@ import csv
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 import sys, os
+from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
+from spacy.lang.fr.stop_words import STOP_WORDS as en_stop
 
 directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(directory)
-print("DIRECTORY", directory)
 
 import config
-
 path = config.paths['url']
-#Supprimer les mots d'arrêts classiques en Français
-nltk.download('stopwords')
-stopwords = stopwords.words("french")
 
-# Exemple
-#text = "Le traitement, + du langage naturel permet aux ordinateurs de comprendre le langage naturel comme le font les humains. Que la langue soit parlée ou écrite, le traitement du langage naturel utilise l’intelligence artificielle pour prendre des données du monde réel, les traiter et leur donner un sens qu’un ordinateur peut comprendre."
+#Supprimer les mots d'arrêts classiques en Français
+stopwords = list(fr_stop) + list(en_stop)
 
 # Nettoyer le texte
 #Chargement des lemmes de la langue française
