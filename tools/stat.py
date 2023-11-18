@@ -3,7 +3,12 @@ import numpy as np
 import graphics
 import data_processing
 import time
-import sys
+import scipy
+import sys, os
+
+directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(directory)
+
 import config
 
 path = config.paths['url']
@@ -127,23 +132,8 @@ def most_frequent_words_and_their_mean_grade(reviews_grades, corpus):
     for key in mean_grade_by_words:
         mean_grade_by_words[key][1] = mean_grade_by_words[key][1]/mean_grade_by_words[key][2]
     
-    i = 0
-    for key in mean_grade_by_words:
-        if i == 10:
-            break
-        
-        print(mean_grade_by_words[key])
-        i += 1
-
     mean_grade_by_words = dict(sorted(mean_grade_by_words.items(), key=lambda item: item[1][2], reverse=True))
 
-    i = 0
-    for key in mean_grade_by_words:
-        if i == 10:
-            break
-        
-        print(mean_grade_by_words[key])
-        i+= 1
     return mean_grade_by_words
 
 # Récupérer les commentaires et les notes et récupérer les stats pour les 10 mots les plus fréquents 
@@ -172,24 +162,40 @@ if __name__ == "__main__":
     print("TIME:", b-a)
 
     a = time.time()
-
+   
+    ######## Statistiques ########
     comments_char, comments_words = length_comments(corpus)
     p = corr_quant(reviews_grades, comments_words)
-    most_frequent_words_and_their_mean_grade(reviews_grades, corpus)
-    print("Pearson coefficient correlation: ", p)
-    exit()
+
+    print("Longueur moyenne d'un commentaire (mots)", np.mean(list(comments_words.values())))
+    print("Longueur moyenne d'un commentaire (charactères)", np.mean(list(comments_char.values())))
     
+    print("Pearson coefficient correlation for comment lenths / grade: ", p)
+    
+    print("Most frequent words and their mean grade: ")
+    mean_grade_by_words = most_frequent_words_and_their_mean_grade(reviews_grades, corpus)
+
+    i = 0
+    for key in mean_grade_by_words:
+        if i == 10:
+            break
+        
+        print(mean_grade_by_words[key])
+        i+= 1
+
     ######## Generating graphs ########
     graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
-    graphics.graph_repartition_by(distrib_notes_by_movie, 4, " films (données d'apprentissage)")
-    graphics.graph_repartition_by(distrib_notes_by_user, 4, " utilisateurs (données d'apprentissage)")
-    """
 
+    k = list(distrib_notes_by_movie.keys())[0]
+    k2 = list(distrib_notes_by_user.keys())[0]
+    graphics.graph_boxplot(distrib_notes_by_movie[k], 4, f"distribution des notes pour le film: {k}","boxplot_films_train")
+    graphics.graph_boxplot(distrib_notes_by_user[k2], 4, f"distribution des notes pour l'utilisateur': {k2}", " boxplot_utilisateurs_train")
+    
     freq = frequence(corpus)
     graphics.graph_repartition(freq, "mots les plus fréquents (données apprentissage)")
 
     b = time.time()
-    print("TIME:", b-a)"""
+    print("TIME:", b-a)
 
 
     print("finished")

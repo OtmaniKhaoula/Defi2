@@ -16,7 +16,6 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 import sys, os
 from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
-from spacy.lang.fr.stop_words import STOP_WORDS as en_stop
 
 directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(directory)
@@ -25,7 +24,16 @@ import config
 path = config.paths['url']
 
 #Supprimer les mots d'arrêts classiques en Français
-stopwords = list(fr_stop) + list(en_stop)
+stopwords = list(fr_stop)
+
+stopwords.append('d')
+stopwords.append('l')
+stopwords.append("un")
+stopwords.append("le")
+stopwords.append('n')
+stopwords.append("une")
+stopwords.append("la")
+stopwords.append('c')
 
 # Nettoyer le texte
 #Chargement des lemmes de la langue française
@@ -34,7 +42,7 @@ nlp = spacy.load('fr_core_news_md')
 # dict_comments: Dictionnaire avec identifiant comme clé et text comme valeur
 def preprocessing_text(dict_comments):
     new_dict_comments = {}
-    for key, text in tqdm.tqdm(dict_comments.items()):
+    for key, text in dict_comments.items():
         if(text == None):
             new_dict_comments[key] = ""
             continue
@@ -67,7 +75,7 @@ def preprocessing_fasttext(dict_comments, notes, folder):
     print("grade repartition: ", n)
 
     with open(f'{path}/processed_data/{folder}/data.tsv', 'w', newline='') as f:
-        for key, text in tqdm.tqdm(dict_comments.items()):
+        for key, text in dict_comments.items():
             if(text == None):
                 training_data.append([key, ""])
                 continue
@@ -111,7 +119,7 @@ def preprocessing_fasttext(dict_comments, notes, folder):
 
 def preprocessing_test(dict_comments):
     new_dict_comments = {}
-    for key, text in tqdm.tqdm(dict_comments.items()):
+    for key, text in dict_comments.items():
         if(text == None):
             new_dict_comments[key] = ""
             continue
