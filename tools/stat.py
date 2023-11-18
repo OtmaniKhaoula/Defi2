@@ -2,13 +2,16 @@ import operator
 import numpy as np
 import graphics
 import data_processing
-import time 
-#from wordcloud import WordCloud
+import time
+import sys
 
-reviews_grades = np.load("../processed_data/reviews_grades.npy", allow_pickle=True).item()
-reviews_users = np.load("../processed_data/reviews_users.npy", allow_pickle=True).item()
-movie_grades = np.load("../processed_data/movie_grades.npy", allow_pickle=True).item()
-corpus = np.load("../processed_data/corpus.npy", allow_pickle=True).item()
+
+folder_to_load = sys.argv[1]
+
+reviews_grades = np.load(f"{folder_to_load}reviews_grades.npy", allow_pickle=True).item()
+reviews_users = np.load(f"{folder_to_load}reviews_users.npy", allow_pickle=True).item()
+movie_grades = np.load(f"{folder_to_load}movie_grades.npy", allow_pickle=True).item()
+corpus = np.load(f"{folder_to_load}comments.npy", allow_pickle=True).item()
 
 def get_mean_grades():
     mean_grade = 0
@@ -71,14 +74,14 @@ def frequence(corpus):
     for key in corpus.keys():
         for token in corpus[key]:
             if not token in words_freq:
-                words_freq[corpus[key]] = 1
+                words_freq[token] = 1
             else:
-                words_freq[corpus[key]] += 1
+                words_freq[token] += 1
     
     return words_freq   
 
 if __name__ == "__main__":
-    """a = time.time()
+    a = time.time()
     mean_note_by_movie = get_mean_grades_by_movie()
     distrib_notes = get_grades_repartition()
     distrib_notes_by_movie = get_grades_repartition_by_movie()
@@ -93,14 +96,13 @@ if __name__ == "__main__":
     graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
     graphics.graph_repartition_by(distrib_notes_by_movie, 4, " films (données d'apprentissage)")
     graphics.graph_repartition_by(distrib_notes_by_user, 4, " utilisateurs (données d'apprentissage)")
- """
+    """
 
     freq = frequence(corpus)
-    print(freq)
     graphics.graph_repartition(freq, "mots les plus fréquents (données apprentissage)")
 
     b = time.time()
-    print("TIME:", b-a)
+    print("TIME:", b-a)"""
 
 
     print("finished")

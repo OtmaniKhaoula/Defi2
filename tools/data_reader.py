@@ -37,14 +37,28 @@ def gen_dicts():
         else:
             movie_grades[movie_id] = [note]
 
-    cleaned_corpus = data_processing.preprocessing_text(corpus)
+    #cleaned_corpus = data_processing.preprocessing_text(corpus)
     fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades, to_save_folder)
 
     np.save(f"../processed_data/{to_save_folder}/movie_grades.npy", movie_grades)
     np.save(f"../processed_data/{to_save_folder}/reviews_movie.npy", reviews_movie)
     np.save(f"../processed_data/{to_save_folder}/reviews_grades.npy", reviews_grades)
     np.save(f"../processed_data/{to_save_folder}/reviews_users.npy", reviews_users)
-    np.save(f"../processed_data/{to_save_folder}.npy", cleaned_corpus)
+    #np.save(f"../processed_data/{to_save_folder}/comments.npy", cleaned_corpus)
 
 
-gen_dicts()
+def gen_test_corpus():
+    for comment in root.findall("comment"):
+        review_id = comment.find('review_id').text
+        commentaire = comment.find('commentaire').text
+       
+        corpus[review_id] = commentaire
+
+    cleaned_corpus = data_processing.preprocessing_test(corpus)
+    np.save(f"../processed_data/{to_save_folder}/comments.npy", cleaned_corpus)
+
+
+if not to_save_folder == 'test':
+    gen_dicts()
+else:
+    gen_test_corpus()
