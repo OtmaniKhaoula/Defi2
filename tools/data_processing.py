@@ -24,7 +24,7 @@ import config
 path = config.paths['url']
 
 #Supprimer les mots d'arrêts classiques en Français
-stopwords = list(fr_stop)
+stopwords = stopwords.words("french")
 
 stopwords.append('d')
 stopwords.append('l')
@@ -65,17 +65,15 @@ def preprocessing_text(dict_comments):
     
     return new_dict_comments
 
-def preprocessing_fasttext(dict_comments, notes, folder):
+def preprocessing_fasttext(dict_comments, notes, users_id, movies_id, folder):
     training_data = []
     n = {}
 
-    for i in np.arange(0, 5.5, 0.5):
+    for i in np.arange(0.5, 5.5, 0.5):
         n[i] = 0
     
-    print("grade repartition: ", n)
-
     with open(f'{path}/processed_data/{folder}/data.tsv', 'w', newline='') as f:
-        for key, text in dict_comments.items():
+        for key, text in tqdm.tqdm(dict_comments.items()):
             if(text == None):
                 training_data.append([key, ""])
                 continue
@@ -108,15 +106,13 @@ def preprocessing_fasttext(dict_comments, notes, folder):
             if folder == "test":
                 row = key+" "+txt
             else:
-                row = "__label__"+str(notes[key])+" "+txt
+                row = "__label__"+str(notes[key])+" "+txt #+" "+str(users_id[key])+" "+str(movies_id[key])
 
             output = csv.writer(f, delimiter='\t')
             output.writerow([row])
 
             n[notes[key]] += 1
     
-    print("grade repartition: ", n)
-
 def preprocessing_test(dict_comments):
     new_dict_comments = {}
     for key, text in dict_comments.items():
