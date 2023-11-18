@@ -74,17 +74,6 @@ def get_grades_repartition_by_user(grades_by_user):
         
     return grades_repartition_by_user
 
-def frequence(corpus):
-    words_freq = {}
-    for key in corpus.keys():
-        for token in corpus[key]:
-            if not token in words_freq:
-                words_freq[token] = 1
-            else:
-                words_freq[token] += 1
-    
-    return words_freq   
-
 # Statistiques sur les notes pour chaque film / utilisateurs
 def stat_et_mean(grades):
     dict_stat = {}
@@ -151,7 +140,6 @@ def stats_frequent_words(reviews_grades, corpus, list_words):
 
 
 if __name__ == "__main__":
-    a = time.time()
     ####### Generating data structures #######
     mean_note_by_movie = get_mean_grades_by_movie()
     distrib_notes = get_grades_repartition()
@@ -159,9 +147,6 @@ if __name__ == "__main__":
     grades_by_user = get_grades_by_user()
     distrib_notes_by_user = get_grades_repartition_by_user(grades_by_user)
     b = time.time()
-    print("TIME:", b-a)
-
-    a = time.time()
    
     ######## Statistiques ########
     comments_char, comments_words = length_comments(corpus)
@@ -186,16 +171,10 @@ if __name__ == "__main__":
     ######## Generating graphs ########
     graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
 
-    k = list(distrib_notes_by_movie.keys())[0]
-    k2 = list(distrib_notes_by_user.keys())[0]
-    graphics.graph_boxplot(distrib_notes_by_movie[k], 4, f"distribution des notes pour le film: {k}","boxplot_films_train")
-    graphics.graph_boxplot(distrib_notes_by_user[k2], 4, f"distribution des notes pour l'utilisateur': {k2}", " boxplot_utilisateurs_train")
-    
-    freq = frequence(corpus)
-    graphics.graph_repartition(freq, "mots les plus fréquents (données apprentissage)")
-
-    b = time.time()
-    print("TIME:", b-a)
+    k = list(movie_grades.keys())[0]
+    k2 = list(grades_by_user .keys())[0]
+    graphics.graph_boxplot(movie_grades[k], f"distribution des notes pour le film: {k}","boxplot_films_train")
+    graphics.graph_boxplot(grades_by_user [k2], f"distribution des notes pour\n l'utilisateur': {k2}", " boxplot_utilisateurs_train")
 
 
     print("finished")

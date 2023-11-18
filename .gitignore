@@ -2,3 +2,6 @@ data/
 processed_data/*
 .DS_Store
 fastText/
+tools/new_stat.py
+graphics2.py
+stat2.py
