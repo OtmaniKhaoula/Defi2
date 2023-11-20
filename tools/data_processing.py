@@ -34,6 +34,7 @@ stopwords.append('n')
 stopwords.append("une")
 stopwords.append("la")
 stopwords.append('c')
+stopwords.append('a')
 
 # Nettoyer le texte
 #Chargement des lemmes de la langue française
@@ -58,8 +59,9 @@ def preprocessing_text(dict_comments):
 
         #Enlever la ponctuation et les stopwords:
         for w in words:
+            w = w.lower()
             if str(w).isalpha() and w not in stopwords:
-                clean_words.append(w.lower())
+                clean_words.append(w)
 
         new_dict_comments[key] = clean_words
     
@@ -97,9 +99,12 @@ def preprocessing_fasttext(dict_comments, notes, users_id, movies_id, folder):
 
             #Enlever la ponctuation et les stopwords:
             for w in words:
+                print("w1 = ", w)
+                w = w.lower()
+                print("w2 = ", w)
                 if str(w).isalpha() and w not in stopwords:
                     #clean_words.append(w.lemma_)
-                    clean_words.append(w.lower())
+                    clean_words.append(w)
 
 
             txt = " ".join(clean_words)
@@ -131,8 +136,9 @@ def preprocessing_test(dict_comments):
 
         #Enlever la ponctuation et les stopwords:
         for w in words:
+            w = w.lower()
             if str(w).isalpha() and w not in stopwords:
-                clean_words.append(w.lower())
+                clean_words.append(w)
 
         new_dict_comments[key] = " ".join(clean_words)
     

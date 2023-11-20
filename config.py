@@ -1,1 +1,1 @@
-paths = dict(url = "/Users/khaoulaotmani/Documents/M2/Application d'Innovation/Defi2")
+paths = dict(url = "C:/Users/Utilisateur/Documents/M2/Application_innovation/Sujet_2/defi/Defi2/Defi2")

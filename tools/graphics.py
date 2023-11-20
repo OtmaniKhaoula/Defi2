@@ -6,7 +6,10 @@ Created on Thu Nov  9 11:47:27 2023
 """
 
 import matplotlib.pyplot as plt
+import pandas as pd
 from nltk import word_tokenize
+from wordcloud import WordCloud
+import plotly.express as px
 import sys, os
 
 plt.style.use('ggplot')
@@ -21,6 +24,7 @@ path = config.paths['url']
 
 # Répartition des notes (données apprentissage)
 def graph_repartition(distrib_notes, titre):
+    plt.figure(figsize=(12,8))
     plt.bar(range(10), list(distrib_notes.values()), width = 0.6, color = 'red',  edgecolor = 'black', linewidth = 2,  ecolor = 'magenta', capsize = 10)
     plt.xticks(range(10), list(distrib_notes.keys()), rotation = 45)
     plt.title("Répartition des " + titre)
@@ -86,7 +90,7 @@ def graph_repartition_by(distrib_notes, n, titre):
     plt.savefig(f"{path}/graphs/{titre}.png")
     plt.clf()
 
-
+"""
 def graph_boxplot(distrib_notes, tit, titre):
 
     plt.boxplot(distrib_notes)
@@ -95,12 +99,47 @@ def graph_boxplot(distrib_notes, tit, titre):
     plt.ylim(-0.5, 6)    
     plt.savefig(f"{path}/graphs/{titre}.png")
     plt.clf()
+"""
+  
+def graph_boxplot(distrib_notes, n, name):
+    # Récupérer les films qu'on veut intégrer dans le graphique 
+    keys = list(distrib_notes.keys())[0:n]
+    notes = []
+    for key in keys:
+        notes.append([distrib_notes[key][i][1] for i in range(len(distrib_notes[key])) for _ in range(distrib_notes[key][i][0])])
+
+    fig = plt.figure(figsize =(10, 7))
+ 
+    # Creating axes instance
+    ax = fig.add_axes([0, 0, 1, 1])
+    
+    # x-axis labels
+    ax.set_xticklabels(keys, rotation=45, ha='right')
+ 
+    # Creating plot
+    ax.boxplot(notes)
+    
+    # Adding title 
+    plt.title("Dispersion des notes")
+    ax.set_xlabel("Identifiants des " + name)
+    ax.set_ylabel("Notes")
+ 
+    titre = "Dispersion des notes pour les " + name
+    plt.savefig(f"{path}/graphs/{titre}.png")
 
 # Nuage de word_cloud
-def word_cloud(text):
-    wordcloud = WordCloud(background_color = 'white', max_words = 50).generate(text)
-    plt.imshow(wordcloud)
-    plt.axis("off")
+def word_cloud(grade_words, titre):
+    
+    # Création d'une nouvelle structure de données avec uniquement les mots et les fréquences
+    new_grade_words = {key: value[2] for key, value in grade_words.items()}
+
+    # Création de l'objet WordCloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(new_grade_words)
+    
+    # Affichage du nuage de mots
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')  # Désactiver les axes
     plt.savefig(f"{path}/graphs/{titre}.png")
 
 
