@@ -6,6 +6,8 @@ import time
 import scipy
 import sys, os
 from collections import Counter
+from scipy import stats
+import pandas as pd
 
 directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(directory)
@@ -13,16 +15,21 @@ sys.path.append(directory)
 import config
 
 path = config.paths['url']
-#folder_to_load = "train"
+
 folder_to_load = sys.argv[1]
-#folder_to_load2 = sys.argv[2]
+folder_to_load2 = sys.argv[2]
+
+"""
+folder_to_load = "dev"
+folder_to_load2 = "train"
+"""
 
 reviews_grades = np.load(f"{path}/processed_data/{folder_to_load}/reviews_grades.npy", allow_pickle=True).item()
 reviews_users = np.load(f"{path}/processed_data/{folder_to_load}/reviews_users.npy", allow_pickle=True).item()
 movie_grades = np.load(f"{path}/processed_data/{folder_to_load}/movie_grades.npy", allow_pickle=True).item()
 comments = np.load(f"{path}/processed_data/{folder_to_load}/comments_clean.npy", allow_pickle=True).item()
 
-#reviews_grades2 = np.load(f"{path}/processed_data/{folder_to_load2}/reviews_grades.npy", allow_pickle=True).item()
+reviews_grades2 = np.load(f"{path}/processed_data/{folder_to_load2}/reviews_grades.npy", allow_pickle=True).item()
 
 def get_mean_grades():
     mean_grade = 0
@@ -39,7 +46,7 @@ def get_mean_grades_by_movie():
 
     return mean_grades_by_movies
 
-def get_grades_repartition():
+def get_grades_repartition(reviews_grades):
     grade_repartition = {}
     for value in np.arange(0.5, 5.5, 0.5):
         grade_repartition[value] = operator.countOf(reviews_grades.values(), value)
@@ -113,9 +120,13 @@ def corr_quant(reviews_grades, length_comments):
     # Calcul de la corrélation de Pearson
     pearson_result = scipy.stats.pearsonr(notes, lengths)
     pearson_correlation = pearson_result[0]
-    p_value = pearson_result[1]
+    #p_value = pearson_result[1]
+    
+    # Calcul corrélation de spearman
+    res = stats.spearmanr(notes, lengths)
+    spearman_correlation = res.correlation
 
-    return pearson_correlation, p_value
+    return pearson_correlation, spearman_correlation
 
 def most_frequent_words_and_their_mean_grade(reviews_grades, corpus):
     mean_grade_by_words = {}
@@ -152,26 +163,74 @@ def stats_frequent_words(reviews_grades, comments, list_notes):
 
     return notes_by_words, freq_words
 
+# Stat sur les notes, n est le nombre min de note d'un utilisateur pour le prendre en compte dans les stats
+def stat_notes(distrib_notes, n):
+    
+    notes = {}
+    for key, values in distrib_notes.items():
+        notes[key] = []
+        for value in values:
+            notes[key] += [value[1]] * value[0]
+    
+    std = []
+    mean = []
+    for key, value in notes.items():
+        if(len(value)>n):
+            std.append(np.std(value))
+            mean.append(np.mean(value))
+            
+    return std, mean
+
 if __name__ == "__main__":
     ####### Generating data structures #######
+    
     mean_note_by_movie = get_mean_grades_by_movie()
-    distrib_notes = get_grades_repartition()
-    # distrib_notes2 = get_grades_repartition() # Ajouter la variable grade_reviews dans la fonction
+    distrib_notes = get_grades_repartition(reviews_grades)
+    distrib_notes2 = get_grades_repartition(reviews_grades2) # Ajouter la variable grade_reviews dans la fonction
     distrib_notes_by_movie = get_grades_repartition_by_movie()
+    
     grades_by_user = get_grades_by_user()
+    
     distrib_notes_by_user = get_grades_repartition_by_user(grades_by_user)
     b = time.time()
    
     ######## Statistiques ########
+    
     comments_char, comments_words = length_comments(comments)
-    pearson_correlation_words, p_value_words = corr_quant(reviews_grades, comments_words)
-    pearson_correlation_char, p_value_char = corr_quant(reviews_grades, comments_char)
+    pearson_correlation_words, spearman_correlation_words = corr_quant(reviews_grades, comments_words)
+    pearson_correlation_char, spearman_correlation_char = corr_quant(reviews_grades, comments_char)
 
     print("Longueur moyenne d'un commentaire (mots)", np.mean(list(comments_words.values())))
     print("Longueur moyenne d'un commentaire (charactères)", np.mean(list(comments_char.values())))
     
     print("Pearson coefficient correlation for comment lengths / grade (words): ", pearson_correlation_words)
     print("Pearson coefficient correlation for comment lengths / grade (char): ", pearson_correlation_char)
+    
+    # Stats des notes mises pour chaque utilisateurs
+    std_user_0, mean_user_0 = stat_notes(distrib_notes_by_user, 0)
+    print("statistiques concernant l'écart-type des notes par utilisateur:")
+    print(pd.Series(std_user_0).describe())
+    print("statistiques concernant la moyenne des notes par utilisateur:")
+    print(pd.Series(mean_user_0).describe())
+    
+    std_user_5, mean_user_5 = stat_notes(distrib_notes_by_user, 5)
+    print("statistiques concernant l'écart-type des notes par utilisateur ayant mis au moins 6 notes:")
+    print(pd.Series(std_user_5).describe())
+    print("statistiques concernant la moyenne des notes par utilisateur ayant mis au moins 6 notes:")
+    print(pd.Series(mean_user_5).describe())
+    
+    # Stats des notes mises pour chaque films
+    std_movie_0, mean_movie_0 = stat_notes(distrib_notes_by_movie, 0)
+    print("statistiques concernant l'écart-type des notes par film:")
+    print(pd.Series(std_movie_0).describe())
+    print("statistiques concernant la moyenne des notes par film:")
+    print(pd.Series(mean_movie_0).describe())
+
+    std_movie_5, mean_movie_5 = stat_notes(distrib_notes_by_movie, 5)
+    print("statistiques concernant l'écart-type des notes par film ayant au moins 6 notes")
+    print(pd.Series(std_movie_5).describe())
+    print("statistiques concernant la moyenne des notes par film ayant au moins 6 notes")
+    print(pd.Series(mean_movie_5).describe())
     
     print("Most frequent words and their mean grade: ")
     mean_grade_by_words = most_frequent_words_and_their_mean_grade(reviews_grades, comments)
@@ -185,6 +244,7 @@ if __name__ == "__main__":
         i+= 1
     
     # Garder seulement les 10 mots les plus fréquents avec leur fréquence
+    
     freq_grade_words = {key: value[2] for key, value in list(mean_grade_by_words.items())[0:10]}
 
     list_notes = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
@@ -201,26 +261,26 @@ if __name__ == "__main__":
             print(key, " - ", freq_words[note][key]/distrib_notes[note] , " - ", freq_words[note][key])
             i+= 1
         print('\n')
-      
+    
     ######## Generating graphs ########
-    graphics.graph_repartition(distrib_notes, "notes (données apprentissage)")
+    graphics.graph_repartition(distrib_notes, "Répartition des notes (" + folder_to_load + ")", "Notes")
 
     # Répartition des notes, comparaison entre les données de dev et d'apprentissage
-    #graphics.graph_note_repartition(distrib_notes, distrib_notes2, "Répartition des notes") # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
+    #graphics.graph_note_repartition(distrib_notes, distrib_notes2, "notes", folder_to_load, folder_to_load2) # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
     
     #k = list(movie_grades.keys())[0]
     #k2 = list(grades_by_user.keys())[0]
     #graphics.graph_boxplot(movie_grades[k], f"distribution des notes pour le film: {k}","boxplot_films_train")
     #graphics.graph_boxplot(grades_by_user [k2], f"distribution des notes pour\n l'utilisateur': {k2}", " boxplot_utilisateurs_train")
 
-    graphics.graph_repartition_by(distrib_notes_by_movie, 4, " films (données d'apprentissage)")
-    graphics.graph_repartition_by(distrib_notes_by_user, 4, " utilisateurs (données d'apprentissage)")
+    graphics.graph_repartition_by(distrib_notes_by_movie, 4, " films (" + folder_to_load + ")")
+    graphics.graph_repartition_by(distrib_notes_by_user, 4, " utilisateurs (" + folder_to_load + ")")
 
-    graphics.graph_boxplot(distrib_notes_by_movie, 10, "films")    
-    graphics.graph_boxplot(distrib_notes_by_user, 10, "utilisateurs") 
+    graphics.graph_boxplot(distrib_notes_by_movie, 10, "films (" + folder_to_load + ")")  
+    graphics.graph_boxplot(distrib_notes_by_user, 10, "utilisateurs (" + folder_to_load + ")")
     
-    graphics.graph_repartition(freq_grade_words, "Répartition des mots les plus fréquents")
+    graphics.graph_repartition(freq_grade_words, "Fréquence des mots les plus fréquents (" + folder_to_load + ")", "Mots")
     
-    graphics.word_cloud(mean_grade_by_words, "Wordcloud of comments")
+    graphics.word_cloud(mean_grade_by_words, "Wordcloud of comments (" + folder_to_load + ")")
 
     print("finished")

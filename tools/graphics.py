@@ -23,41 +23,45 @@ import config
 path = config.paths['url']
 
 # Répartition des notes (données apprentissage)
-def graph_repartition(distrib_notes, titre):
+def graph_repartition(distrib_notes, titre, xLabel):
     plt.figure(figsize=(12,8))
     plt.bar(range(10), list(distrib_notes.values()), width = 0.6, color = 'red',  edgecolor = 'black', linewidth = 2,  ecolor = 'magenta', capsize = 10)
     plt.xticks(range(10), list(distrib_notes.keys()), rotation = 45)
-    plt.title("Répartition des " + titre)
-    plt.xlabel("Notes")
+    plt.title(titre)
+    plt.gca().set_facecolor('white')
+    plt.xlabel(xLabel)
     plt.ylabel("Effectifs")
     plt.savefig(f"{path}/graphs/{titre}.png")
     plt.clf()
 
 # Comparer la répartition des notes pour les données d'apprentissage
-def graph_note_repartition(distrib_notes_app, distrib_notes_dev, titre):
+def graph_note_repartition(distrib_notes_app, distrib_notes_dev, titre, name1, name2):
 
     barWidth = 0.3
     
     # Récupérer les films qu'on veut intégrer dans le graphique (les y) 
     films_app = list(distrib_notes_app.values())
     films_dev = list(distrib_notes_dev.values())
-    print(films_app)
-    print(films_dev)
+    
     #print("films = ", films)
     #print(distrib_notes[films[0]])
     x1 = range(len(films_app)) # Position des barres des données d'app
     x2 = [i + barWidth for i in x1] # des données de dev
     
-    plt.bar(x1, films_app, width = barWidth, color = 'orange', linewidth = 2, label = "learning")
-    plt.bar(x2, films_dev, width = barWidth, color = 'yellow', linewidth = 2, label = "Development")
+    plt.figure(figsize=(12,8))
+    plt.bar(x1, films_app, width = barWidth, color = 'orange', linewidth = 2, label = name1)
+    plt.bar(x2, films_dev, width = barWidth, color = 'yellow', linewidth = 2, label = name2)
 
     plt.xticks([r + barWidth / 2 for r in range(len(films_app))], list(distrib_notes_app.keys()))
 
     plt.title("Répartition des notes")
+    plt.gca().set_facecolor('white')
     plt.xlabel("Films")
     plt.ylabel("Effectifs")
     
-    plt.legend(title = 'Data')
+    plt.legend(title = 'Donnée',  facecolor='white', edgecolor='black')
+
+    #plt.show()
     plt.savefig(f"{path}/graphs/{titre}.png")
 
     plt.clf()
@@ -84,6 +88,7 @@ def graph_repartition_by(distrib_notes, n, titre):
         plt.xlabel("Films")
         plt.ylabel("Effectifs")
 
+    plt.gca().set_facecolor('white')
     plt.xticks([r + barWidth*5 for r in range(len(y))], [key for key in films])
     plt.legend(title = 'Notes')
 
@@ -108,7 +113,7 @@ def graph_boxplot(distrib_notes, n, name):
     for key in keys:
         notes.append([distrib_notes[key][i][1] for i in range(len(distrib_notes[key])) for _ in range(distrib_notes[key][i][0])])
 
-    fig = plt.figure(figsize =(10, 7))
+    fig = plt.figure(figsize =(12, 9))
  
     # Creating axes instance
     ax = fig.add_axes([0, 0, 1, 1])
@@ -118,11 +123,12 @@ def graph_boxplot(distrib_notes, n, name):
  
     # Creating plot
     ax.boxplot(notes)
+    ax.set_xlabel("Identifiants des " + name)
+    ax.set_ylabel("Notes")
     
     # Adding title 
     plt.title("Dispersion des notes")
-    ax.set_xlabel("Identifiants des " + name)
-    ax.set_ylabel("Notes")
+    plt.gca().set_facecolor('white')
  
     titre = "Dispersion des notes pour les " + name
     plt.savefig(f"{path}/graphs/{titre}.png")

@@ -11,7 +11,7 @@ Lien: https://ledatascientist.com/analyse-de-sentiments-avec-camembert/
 Importation de librairies
 """
 
-#import torch
+import torch
 import seaborn
 import pandas as pd
 import numpy as np
