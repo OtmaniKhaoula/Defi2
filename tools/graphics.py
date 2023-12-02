@@ -35,7 +35,7 @@ def graph_repartition(distrib_notes, titre, xLabel):
     plt.clf()
 
 # Comparer la répartition des notes pour les données d'apprentissage
-def graph_note_repartition(distrib_notes_app, distrib_notes_dev, titre, name1, name2):
+def graph_note_repartition(distrib_notes_app, distrib_notes_dev, titre, name1, name2, xLabel):
 
     barWidth = 0.3
     
@@ -54,9 +54,9 @@ def graph_note_repartition(distrib_notes_app, distrib_notes_dev, titre, name1, n
 
     plt.xticks([r + barWidth / 2 for r in range(len(films_app))], list(distrib_notes_app.keys()))
 
-    plt.title("Répartition des notes")
+    plt.title(titre)
     plt.gca().set_facecolor('white')
-    plt.xlabel("Films")
+    plt.xlabel(xLabel)
     plt.ylabel("Effectifs")
     
     plt.legend(title = 'Donnée',  facecolor='white', edgecolor='black')
@@ -64,7 +64,7 @@ def graph_note_repartition(distrib_notes_app, distrib_notes_dev, titre, name1, n
     #plt.show()
     plt.savefig(f"{path}/graphs/{titre}.png")
 
-    plt.clf()
+    #plt.clf()
         
 # Répartition des notes par films (n: nombre de film qu'on veut mettre dans le graphique)
 # titre: préciser si c'est par films ou par utilisateur et si c'est sur les données d'apprentissage ou de validation

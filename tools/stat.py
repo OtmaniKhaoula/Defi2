@@ -15,14 +15,14 @@ sys.path.append(directory)
 import config
 
 path = config.paths['url']
-
+"""
 folder_to_load = sys.argv[1]
 folder_to_load2 = sys.argv[2]
-
 """
+
 folder_to_load = "dev"
 folder_to_load2 = "train"
-"""
+
 
 reviews_grades = np.load(f"{path}/processed_data/{folder_to_load}/reviews_grades.npy", allow_pickle=True).item()
 reviews_users = np.load(f"{path}/processed_data/{folder_to_load}/reviews_users.npy", allow_pickle=True).item()
@@ -30,6 +30,7 @@ movie_grades = np.load(f"{path}/processed_data/{folder_to_load}/movie_grades.npy
 comments = np.load(f"{path}/processed_data/{folder_to_load}/comments_clean.npy", allow_pickle=True).item()
 
 reviews_grades2 = np.load(f"{path}/processed_data/{folder_to_load2}/reviews_grades.npy", allow_pickle=True).item()
+comments2 = np.load(f"{path}/processed_data/{folder_to_load2}/comments_clean.npy", allow_pickle=True).item()
 
 def get_mean_grades():
     mean_grade = 0
@@ -234,7 +235,8 @@ if __name__ == "__main__":
     
     print("Most frequent words and their mean grade: ")
     mean_grade_by_words = most_frequent_words_and_their_mean_grade(reviews_grades, comments)
-
+    mean_grade_by_words2 = most_frequent_words_and_their_mean_grade(reviews_grades2, comments2)
+    
     i = 0
     for key in mean_grade_by_words:
         if i == 10:
@@ -246,12 +248,15 @@ if __name__ == "__main__":
     # Garder seulement les 10 mots les plus fréquents avec leur fréquence
     
     freq_grade_words = {key: value[2] for key, value in list(mean_grade_by_words.items())[0:10]}
+    freq_grade_words2 = {key: value[2] for key, value in list(mean_grade_by_words2.items())[0:10]}
 
     list_notes = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
     notes_by_words, freq_words = stats_frequent_words(reviews_grades, comments, list_notes)
+    notes_by_words2, freq_words2 = stats_frequent_words(reviews_grades2, comments2, list_notes)
     
     print("Most frequent words for each note and their mean grade: \n ")
     for note in list_notes:
+        
         i = 0
         print("note = ", note, " - Fréquence = ", distrib_notes[note])
         for key in freq_words[note].keys():
@@ -262,11 +267,25 @@ if __name__ == "__main__":
             i+= 1
         print('\n')
     
+    # Voir la fréquence des mots "film" et "bien" pour chaque note
+    freq_film_bien_by_note = {}
+    freq_film_bien_by_note2 = {}
+    freq_film_bien_by_note["film"] = {}
+    freq_film_bien_by_note["bien"] = {}
+    freq_film_bien_by_note2["film"] = {}
+    freq_film_bien_by_note2["bien"] = {}
+    
+    for note in list_notes:
+        freq_film_bien_by_note["film"][note] = freq_words[note]["film"]/distrib_notes[note]
+        freq_film_bien_by_note["bien"][note] = freq_words[note]["bien"]/distrib_notes[note]
+        freq_film_bien_by_note2["film"][note] = freq_words2[note]["film"]/distrib_notes[note]
+        freq_film_bien_by_note2["bien"][note] = freq_words2[note]["bien"]/distrib_notes[note]
+        
     ######## Generating graphs ########
     graphics.graph_repartition(distrib_notes, "Répartition des notes (" + folder_to_load + ")", "Notes")
 
     # Répartition des notes, comparaison entre les données de dev et d'apprentissage
-    #graphics.graph_note_repartition(distrib_notes, distrib_notes2, "notes", folder_to_load, folder_to_load2) # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
+    graphics.graph_note_repartition(distrib_notes, distrib_notes2, "notes", folder_to_load, folder_to_load2, "Notes") # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
     
     #k = list(movie_grades.keys())[0]
     #k2 = list(grades_by_user.keys())[0]
@@ -280,7 +299,11 @@ if __name__ == "__main__":
     graphics.graph_boxplot(distrib_notes_by_user, 10, "utilisateurs (" + folder_to_load + ")")
     
     graphics.graph_repartition(freq_grade_words, "Fréquence des mots les plus fréquents (" + folder_to_load + ")", "Mots")
-    
+    graphics.graph_note_repartition(freq_film_bien_by_note["film"], freq_film_bien_by_note2["film"], 'Fréquence moyenne du mot film selon la note' , folder_to_load, folder_to_load2, "Mots") # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
+    graphics.graph_note_repartition(freq_film_bien_by_note["bien"], freq_film_bien_by_note2["bien"], 'Fréquence moyenne du mot bien selon la note' , folder_to_load, folder_to_load2, "Mots") # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
+    graphics.graph_note_repartition(freq_grade_words, freq_grade_words2, "Top 10 des mots les plus fréquents", folder_to_load, folder_to_load2, "Mots") # ajouter les arguments folder_to_load et folder_to_load2 dans la fonction
+
+
     graphics.word_cloud(mean_grade_by_words, "Wordcloud of comments (" + folder_to_load + ")")
 
     print("finished")
