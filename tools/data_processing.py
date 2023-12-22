@@ -80,28 +80,16 @@ def preprocessing_fasttext(dict_comments, notes, users_id, movies_id, folder):
                 training_data.append([key, ""])
                 continue
             
-            #if n[notes[key]] == 30000:
-            #    continue
-
             #Tokenization
-
-            #print("b:", text)
             words = word_tokenize(text,language="french",preserve_line=True)
-            #print("a:", words)
-            #words = nlp(text)
-            #print("c:", words)
-            #exit()
-            #Lemmatisation
-            #words=nlp(" ".join(words))
 
             #Création d'une liste vide pour aceullir les mots sans ponctutation
             clean_words = []
 
             #Enlever la ponctuation et les stopwords:
             for w in words:
-                print("w1 = ", w)
                 w = w.lower()
-                print("w2 = ", w)
+
                 if str(w).isalpha() and w not in stopwords:
                     #clean_words.append(w.lemma_)
                     clean_words.append(w)
