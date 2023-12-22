@@ -6,3 +6,4 @@ tools/new_stat.py
 graphics2.py
 stat2.py
 config.py
+*.svm
