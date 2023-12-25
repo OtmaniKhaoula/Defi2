@@ -1,0 +1,24 @@
+GPU disponible!
+DATA LOADING: 9.502414226531982
+Tokenizing...
+
+2 TOKENIZE 5.943178176879883
+2 ENCODE 132.4171359539032
+input_ids_train =  [514 148 990 ...   0   0   0]
+ file =  /users/kotmani/Defi2/glove
+Loading pretrained vectors...
+0it [00:00, ?it/s]3261it [00:00, 32602.41it/s]7301it [00:00, 37187.35it/s]11777it [00:00, 40640.61it/s]16675it [00:00, 43925.70it/s]21945it [00:00, 47088.33it/s]27595it [00:00, 50286.66it/s]33593it [00:00, 53453.71it/s]39909it [00:00, 56543.13it/s]46473it [00:00, 59386.30it/s]53172it [00:01, 61732.34it/s]60289it [00:01, 64617.99it/s]67414it [00:01, 66634.83it/s]74806it [00:01, 68838.44it/s]82247it [00:01, 70520.78it/s]89784it [00:01, 71981.81it/s]97621it [00:01, 73903.80it/s]105279it [00:01, 74707.08it/s]113064it [00:01, 75645.84it/s]120895it [00:01, 76444.04it/s]128813it [00:02, 77263.40it/s]136849it [00:02, 78192.41it/s]144863it [00:02, 78773.87it/s]152866it [00:02, 79149.28it/s]161100it [00:02, 80102.58it/s]169217it [00:02, 80420.49it/s]177572it [00:02, 81358.69it/s]185917it [00:02, 81985.29it/s]194128it [00:02, 82021.26it/s]202517it [00:02, 82581.31it/s]210965it [00:03, 83148.79it/s]219322it [00:03, 83273.86it/s]227690it [00:03, 83395.13it/s]236030it [00:03, 83394.23it/s]244470it [00:03, 83695.01it/s]252911it [00:03, 83907.01it/s]261403it [00:03, 84209.05it/s]269824it [00:03, 84065.60it/s]278231it [00:03, 83911.56it/s]286639it [00:03, 83960.69it/s]295036it [00:04, 83780.17it/s]303415it [00:04, 83715.35it/s]311787it [00:04, 83697.54it/s]320201it [00:04, 83828.98it/s]328584it [00:04, 83654.40it/s]337007it [00:04, 83824.78it/s]345413it [00:04, 83891.90it/s]353803it [00:04, 83890.51it/s]362193it [00:04, 83746.40it/s]370574it [00:04, 83762.89it/s]378951it [00:05, 83689.07it/s]387360it [00:05, 83806.61it/s]395773it [00:05, 83902.88it/s]400001it [00:05, 76132.40it/s]
+There are 24077 / 91560 pretrained vectors found.
+ Une partie d'embedding =  300
+AAAA torch.Size([665950, 2677])
+BBBB torch.Size([665950])
+GETTING dataloaders: 149.304212808609
+STARTING TRAINING…
+Traceback (most recent call last):
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 174, in <module>
+    main()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 171, in main
+    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=50, model_name="mr_cnn_rand")
+  File "/users/kotmani/Defi2/models/CNN/utils.py", line 12, in train
+    loss_fn = nn.CrossEntropyLoss()
+NameError: name 'nn' is not defined

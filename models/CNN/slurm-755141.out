@@ -1,0 +1,24 @@
+GPU disponible!
+DATA LOADING: 14.422261476516724
+Tokenizing...
+
+2 TOKENIZE 5.262429714202881
+2 ENCODE 126.61663770675659
+input_ids_train =  [514 148 990 ...   0   0   0]
+ file =  /users/kotmani/Defi2/glove
+Loading pretrained vectors...
+0it [00:00, ?it/s]3240it [00:00, 32394.86it/s]7267it [00:00, 37021.51it/s]11719it [00:00, 40442.90it/s]16621it [00:00, 43821.08it/s]21878it [00:00, 46975.10it/s]27507it [00:00, 50140.26it/s]33515it [00:00, 53388.02it/s]39864it [00:00, 56602.37it/s]46447it [00:00, 59484.16it/s]53185it [00:01, 61913.97it/s]60365it [00:01, 64938.00it/s]67551it [00:01, 67040.42it/s]74999it [00:01, 69291.20it/s]82525it [00:01, 71092.01it/s]90133it [00:01, 72592.56it/s]98093it [00:01, 74700.77it/s]105836it [00:01, 75519.14it/s]113736it [00:01, 76564.28it/s]121667it [00:01, 77386.81it/s]129676it [00:02, 78196.54it/s]137805it [00:02, 79123.65it/s]145954it [00:02, 79831.93it/s]154037it [00:02, 80129.95it/s]162313it [00:02, 80909.03it/s]170522it [00:02, 81260.79it/s]178884it [00:02, 81966.05it/s]187263it [00:02, 82511.06it/s]195559it [00:02, 82643.45it/s]203969it [00:02, 83078.70it/s]212420it [00:03, 83507.02it/s]220849it [00:03, 83731.80it/s]229230it [00:03, 83752.59it/s]237640it [00:03, 83854.67it/s]246123it [00:03, 84145.04it/s]254621it [00:03, 84393.48it/s]263182it [00:03, 84756.07it/s]271683it [00:03, 84830.08it/s]280284it [00:03, 85180.22it/s]288837it [00:03, 85283.16it/s]297370it [00:04, 85293.33it/s]305937it [00:04, 85404.09it/s]314534it [00:04, 85572.83it/s]323123it [00:04, 85667.45it/s]331711it [00:04, 85729.52it/s]340385it [00:04, 86031.14it/s]349028it [00:04, 86148.60it/s]357643it [00:04, 85948.70it/s]366238it [00:04, 85936.72it/s]374874it [00:04, 86062.52it/s]383481it [00:05, 85910.45it/s]392073it [00:05, 85891.44it/s]400001it [00:05, 77014.76it/s]
+There are 24077 / 91560 pretrained vectors found.
+ Une partie d'embedding =  300
+Traceback (most recent call last):
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 206, in <module>
+    main()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 189, in main
+    train_dataloader, dev_dataloader, vocab_size = tokenize_and_encode()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 140, in tokenize_and_encode
+    train_dataloader, dev_dataloader = data_loader(train_inputs, dev_inputs, train_labels, dev_labels, batch_size=512)
+  File "/users/kotmani/Defi2/models/CNN/utils.py", line 218, in data_loader
+    train_data = TensorDataset(train_inputs, train_labels)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/utils/data/dataset.py", line 204, in __init__
+    assert all(tensors[0].size(0) == tensor.size(0) for tensor in tensors), "Size mismatch between tensors"
+AssertionError: Size mismatch between tensors

@@ -1,0 +1,36 @@
+GPU disponible!
+DATA LOADING: 9.545993566513062
+Tokenizing...
+
+2 TOKENIZE 5.593488693237305
+2 ENCODE 132.34227085113525
+input_ids_train =  [514 148 990 ...   0   0   0]
+ file =  /users/kotmani/Defi2/glove
+Loading pretrained vectors...
+0it [00:00, ?it/s]3207it [00:00, 32064.53it/s]7215it [00:00, 36773.68it/s]11649it [00:00, 40221.75it/s]16496it [00:00, 43476.42it/s]21684it [00:00, 46498.78it/s]27226it [00:00, 49526.78it/s]33134it [00:00, 52648.80it/s]39383it [00:00, 55780.68it/s]45811it [00:00, 58436.61it/s]52430it [00:01, 60828.77it/s]59348it [00:01, 63378.69it/s]66396it [00:01, 65531.68it/s]73659it [00:01, 67674.90it/s]81000it [00:01, 69402.35it/s]88427it [00:01, 70868.87it/s]96119it [00:01, 72688.29it/s]103736it [00:01, 73734.09it/s]111434it [00:01, 74704.68it/s]119154it [00:01, 75452.13it/s]126933it [00:02, 76151.67it/s]134834it [00:02, 77008.72it/s]142726it [00:02, 77579.81it/s]150592it [00:02, 77902.06it/s]158622it [00:02, 78617.96it/s]166534it [00:02, 78767.31it/s]174655it [00:02, 79498.28it/s]182803it [00:02, 80091.85it/s]190869it [00:02, 80260.59it/s]199048it [00:02, 80718.28it/s]207296it [00:03, 81244.19it/s]215426it [00:03, 81257.41it/s]223616it [00:03, 81447.93it/s]231761it [00:03, 81222.19it/s]240009it [00:03, 81596.59it/s]248280it [00:03, 81927.83it/s]256601it [00:03, 82310.59it/s]264904it [00:03, 82524.74it/s]273160it [00:03, 82533.57it/s]281529it [00:03, 82877.67it/s]289880it [00:04, 83063.65it/s]298187it [00:04, 83000.00it/s]306553it [00:04, 83196.10it/s]314875it [00:04, 83201.26it/s]323241it [00:04, 83336.06it/s]331604it [00:04, 83422.39it/s]340031it [00:04, 83674.61it/s]348438it [00:04, 83792.45it/s]356818it [00:04, 83652.65it/s]365184it [00:04, 83614.50it/s]373604it [00:05, 83787.74it/s]381983it [00:05, 83570.94it/s]390381it [00:05, 83689.26it/s]398802it [00:05, 83843.92it/s]400001it [00:05, 75219.64it/s]
+There are 24077 / 91560 pretrained vectors found.
+ Une partie d'embedding =  300
+AAAA torch.Size([665950, 2677])
+BBBB torch.Size([665950])
+GETTING dataloaders: 149.06594610214233
+STARTING TRAINING…
+Start training...
+
+ Epoch  |  Train Loss  |  dev Loss  |  dev Acc  |  Elapsed 
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 173, in <module>
+    main()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 170, in main
+    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=50, model_name="mr_cnn_rand")
+  File "/users/kotmani/Defi2/models/CNN/utils.py", line 48, in train
+    loss = loss_fn(logits, b_labels)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/loss.py", line 1179, in forward
+    return F.cross_entropy(input, target, weight=self.weight,
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/functional.py", line 3053, in cross_entropy
+    return torch._C._nn.cross_entropy_loss(input, target, weight, _Reduction.get_enum(reduction), ignore_index, label_smoothing)
+RuntimeError: "nll_loss_forward_reduce_cuda_kernel_2d_index" not implemented for 'Float'

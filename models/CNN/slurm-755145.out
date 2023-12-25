@@ -1,0 +1,12 @@
+GPU disponible!
+DATA LOADING: 9.458179473876953
+Tokenizing...
+
+Traceback (most recent call last):
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 174, in <module>
+    main()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 157, in main
+    train_dataloader, dev_dataloader, vocab_size = tokenize_and_encode()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 76, in tokenize_and_encode
+    tokenized_texts_train, word2idx, train_labels, max_len = tokenize(comments_train, max_len)
+TypeError: tokenize() missing 1 required positional argument: 'max_len'

@@ -1,0 +1,24 @@
+GPU disponible!
+DATA LOADING: 14.185880184173584
+Tokenizing...
+
+2 TOKENIZE 5.159337043762207
+2 ENCODE 125.48753380775452
+input_ids_train =  [514 148 990 ...   0   0   0]
+ file =  /users/kotmani/Defi2/glove
+Loading pretrained vectors...
+0it [00:00, ?it/s]3237it [00:00, 32365.71it/s]7246it [00:00, 36906.08it/s]11678it [00:00, 40288.39it/s]16537it [00:00, 43562.22it/s]21731it [00:00, 46581.13it/s]27319it [00:00, 49741.22it/s]33261it [00:00, 52903.59it/s]39542it [00:00, 56056.68it/s]46055it [00:00, 58890.31it/s]52758it [00:01, 61400.29it/s]59751it [00:01, 64009.60it/s]66868it [00:01, 66179.92it/s]74218it [00:01, 68396.38it/s]81631it [00:01, 70126.19it/s]89152it [00:01, 71656.59it/s]96975it [00:01, 73631.99it/s]104576it [00:01, 74344.78it/s]112371it [00:01, 75426.75it/s]120196it [00:01, 76271.54it/s]128062it [00:02, 76987.30it/s]136107it [00:02, 78024.58it/s]144090it [00:02, 78563.93it/s]152073it [00:02, 78940.52it/s]160213it [00:02, 79676.42it/s]168216it [00:02, 79781.67it/s]176451it [00:02, 80550.09it/s]184669it [00:02, 81036.54it/s]192823it [00:02, 81185.91it/s]201108it [00:02, 81684.62it/s]209448it [00:03, 82198.25it/s]217676it [00:03, 82220.68it/s]225955it [00:03, 82390.32it/s]234202it [00:03, 82411.47it/s]242552it [00:03, 82729.52it/s]250929it [00:03, 83035.18it/s]259336it [00:03, 83344.72it/s]267692it [00:03, 83406.22it/s]276058it [00:03, 83480.34it/s]284557it [00:03, 83931.48it/s]292981it [00:04, 84019.49it/s]301383it [00:04, 84008.55it/s]309825it [00:04, 84130.79it/s]318370it [00:04, 84525.44it/s]326859it [00:04, 84626.59it/s]335322it [00:04, 84580.76it/s]343864it [00:04, 84829.95it/s]352348it [00:04, 84757.48it/s]360824it [00:04, 84641.15it/s]369341it [00:04, 84796.37it/s]377869it [00:05, 84939.74it/s]386364it [00:05, 84867.87it/s]394885it [00:05, 84965.68it/s]400001it [00:05, 76016.64it/s]
+There are 24077 / 91560 pretrained vectors found.
+ Une partie d'embedding =  300
+Traceback (most recent call last):
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 206, in <module>
+    main()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 189, in main
+    train_dataloader, dev_dataloader, vocab_size = tokenize_and_encode()
+  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 140, in tokenize_and_encode
+    train_dataloader, dev_dataloader = data_loader(train_inputs, dev_inputs, train_labels, dev_labels, batch_size=512)
+  File "/users/kotmani/Defi2/models/CNN/utils.py", line 208, in data_loader
+    tuple(torch.tensor(data).to(device) for data in
+  File "/users/kotmani/Defi2/models/CNN/utils.py", line 208, in <genexpr>
+    tuple(torch.tensor(data).to(device) for data in
+NameError: name 'device' is not defined
