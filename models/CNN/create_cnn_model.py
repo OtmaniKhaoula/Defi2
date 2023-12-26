@@ -1,14 +1,7 @@
-"""
-CNN avec Pytorch pour classification des sentiments
-Lien du code: https://www.kaggle.com/code/williamlwcliu/cnn-text-classification-pytorch/notebook
-Otmani Khaoula & Martin Elisa
-"""
-
 import os
 import sys
 import torch
 import fasttext
-import tqdm
 import numpy as np
 import pandas as pd
 import nltk
@@ -19,16 +12,18 @@ import time
 from nltk.tokenize import word_tokenize
 
 from CNN_NLP import CNN_NLP
-from utils import train, evaluate, tokenize, encode, load_pretrained_vectors, data_loader
+from utils import train, load_pretrained_vectors, data_loader, tokenize_and_encode
 
 #nltk.download("all")
-
 
 directory = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(directory)
 
 import config
 path = config.paths['url']
+
+#CODE BASED ON THE FOLLOWING TUTORIAL: https://www.kaggle.com/code/williamlwcliu/cnn-text-classification-pytorch/notebook
+
 
 if torch.cuda.is_available():
     print("GPU disponible!")
@@ -41,17 +36,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 ###############################   IMPORT OUR PRE PROCESSED DATA   ###############################
 
 start = time.time()
+
 reviews_grades_train = np.load(f"{path}/processed_data/train/reviews_grades.npy", allow_pickle=True).item()
 comments_train = np.load(f"{path}/processed_data/train/comments.npy", allow_pickle=True).item()
 reviews_users_train = np.load(f"{path}/processed_data/train/reviews_users.npy", allow_pickle=True).item()
 reviews_movie_train = np.load(f"{path}/processed_data/train/reviews_movie.npy", allow_pickle=True).item()
-
-
-"""
-comments_test = np.load(f"{path}/processed_data/test/comments.npy", allow_pickle=True).item()
-data_test = pd.DataFrame(list(comments_test.items()), columns=['id_reviews', 'comments'])
-comments_test = data_test['comments'].values.tolist()
-"""
 
 reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades.npy", allow_pickle=True).item()
 comments_dev = np.load(f"{path}/processed_data/dev/comments.npy", allow_pickle=True).item()
@@ -61,64 +50,9 @@ reviews_movie_dev = np.load(f"{path}/processed_data/dev/reviews_movie.npy", allo
 
 print("DATA LOADING:", time.time()-start, flush=True)
 
-# Download Glove Embeddings
-URL = "https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip"
-FILE = f"{path}/glove"
-
-
-def tokenize_and_encode():
-    # Tokenize, build vocabulary, encode tokens
-    print("Tokenizing...\n")
-    max_len = 0
-
-    s = time.time()
-    tokenized_texts_train, word2idx, train_labels, max_len = tokenize(comments_train, reviews_grades_train, max_len)
-    #tokenized_texts_test, word2idx, max_len = tokenize(comments_test)
-    tokenized_texts_dev, word2idx, dev_labels, max_len = tokenize(comments_dev, reviews_grades_dev, max_len)
-    print("2 TOKENIZE", time.time()-s, flush=True)
-
-    s = time.time()
-    input_ids_dev = encode(tokenized_texts_dev, word2idx, max_len)
-    input_ids_train = encode(tokenized_texts_train, word2idx, max_len)
-    print("2 ENCODE", time.time()-s, flush=True)
-
-    #input_ids_test = encode(tokenized_texts_test, word2idx, max_len)
-
-    print("input_ids_train = ", input_ids_train[0])
-
-    # Load pretrained vectors
-    # tokenized_texts, word2idx, max_len = tokenize(np.concatenate((train_texts, test_texts), axis=None))
-    print(" file = ", FILE)
-    embeddings = load_pretrained_vectors(word2idx, f"{FILE}/glove.6B.300d.txt")
-    embeddings = torch.tensor(embeddings)
-
-    print(" Une partie d'embedding = ", len(embeddings[0]))
-
-
-    # Load data to PyTorch DataLoader
-    train_inputs = input_ids_train
-    #test_inputs = input_ids_test
-    dev_inputs = input_ids_dev
-
-    #print("TRAIN LABELS", train_labels[0].shape, flush=True)
-    #print("TRAIN INPUTS", train_inputs.shape, flush=True)
-
-    #test_labels = notes_test
-    train_dataloader, dev_dataloader = data_loader(train_inputs, dev_inputs, train_labels, dev_labels, batch_size=512)
-
-    return train_dataloader, dev_dataloader, len(word2idx)
-
-def initilize_model(pretrained_embedding=None,
-                    freeze_embedding=False,
-                    vocab_size=None,
-                    embed_dim=300,
-                    filter_sizes=[3, 4, 5],
-                    num_filters=[100, 100, 100],
-                    num_classes=10,
-                    dropout=0.5,
-                    learning_rate=0.01,
-                    weight_decay=0):
-    """Instantiate a CNN model and an optimizer."""
+def initilize_model(pretrained_embedding=None, freeze_embedding=False, vocab_size=None,
+                    embed_dim=300, filter_sizes=[3, 4, 5], num_filters=[100, 100, 100],
+                    num_classes=10, dropout=0.5, learning_rate=0.01, weight_decay=0):
 
     assert (len(filter_sizes) == len(num_filters)), "filter_sizes and \
     num_filters need to be of the same length."
@@ -153,12 +87,15 @@ def main():
     # set_seed(42)
 
     start = time.time()
-    train_dataloader, dev_dataloader, vocab_size = tokenize_and_encode()
+    max_len = 2677
+    train_dataloader, vocab_size = tokenize_and_encode(comments_train, reviews_grades_train, max_len)
+    dev_dataloader, vocab_size = tokenize_and_encode(comments_dev, reviews_grades_dev, max_len)
+
     print("GETTING dataloaders:", time.time()-start, flush=True)
 
     cnn_rand, optimizer = initilize_model(vocab_size=vocab_size,
                                         embed_dim=300,
-                                        learning_rate=0.1,
+                                        learning_rate=0.5,
                                         dropout=0.5,
                                         weight_decay=1e-3)
 
@@ -167,7 +104,7 @@ def main():
 
     print("STARTING TRAINING…", flush=True)
     start = time.time()
-    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=50, model_name="mr_cnn_rand")
+    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=100, model_name="lr=0,5-emb-dim=300-all")
     print("END OF TRAINING:", time.time()-start, flush=True)
 
 main()

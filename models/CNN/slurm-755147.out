@@ -1,28 +1,0 @@
-GPU disponible!
-DATA LOADING: 9.558645248413086
-Tokenizing...
-
-2 TOKENIZE 5.7709386348724365
-2 ENCODE 132.4370722770691
-input_ids_train =  [514 148 990 ...   0   0   0]
- file =  /users/kotmani/Defi2/glove
-Loading pretrained vectors...
-0it [00:00, ?it/s]3145it [00:00, 31441.86it/s]7016it [00:00, 35712.94it/s]11335it [00:00, 39124.66it/s]16042it [00:00, 42259.61it/s]21107it [00:00, 45284.45it/s]26524it [00:00, 48304.74it/s]32289it [00:00, 51354.90it/s]38394it [00:00, 54438.46it/s]44715it [00:00, 57177.88it/s]51241it [00:01, 59669.74it/s]58053it [00:01, 62254.52it/s]64995it [00:01, 64432.72it/s]72172it [00:01, 66652.98it/s]79449it [00:01, 68498.08it/s]86761it [00:01, 69888.97it/s]94348it [00:01, 71686.78it/s]101959it [00:01, 73007.29it/s]109567it [00:01, 73929.38it/s]117246it [00:01, 74787.88it/s]124923it [00:02, 75379.46it/s]132793it [00:02, 76374.74it/s]140652it [00:02, 77037.18it/s]148498it [00:02, 77456.38it/s]156432it [00:02, 78018.62it/s]164460it [00:02, 78695.72it/s]172446it [00:02, 79043.39it/s]180598it [00:02, 79783.53it/s]188712it [00:02, 80187.39it/s]196820it [00:02, 80453.40it/s]204986it [00:03, 80806.48it/s]213183it [00:03, 81153.37it/s]221341it [00:03, 81280.33it/s]229479it [00:03, 81309.09it/s]237639it [00:03, 81393.82it/s]245848it [00:03, 81601.69it/s]254099it [00:03, 81872.43it/s]262344it [00:03, 82043.66it/s]270559it [00:03, 82073.88it/s]278834it [00:03, 82273.20it/s]287141it [00:04, 82510.71it/s]295418it [00:04, 82584.74it/s]303677it [00:04, 82448.18it/s]311960it [00:04, 82560.90it/s]320287it [00:04, 82770.45it/s]328565it [00:04, 82707.48it/s]336968it [00:04, 83101.84it/s]345357it [00:04, 83334.93it/s]353754it [00:04, 83522.75it/s]362107it [00:04, 83436.12it/s]370483it [00:05, 83532.67it/s]378837it [00:05, 83369.42it/s]387175it [00:05, 83117.57it/s]395487it [00:05, 82876.72it/s]400001it [00:05, 74647.92it/s]
-There are 24077 / 91560 pretrained vectors found.
- Une partie d'embedding =  300
-AAAA torch.Size([665950, 2677])
-BBBB torch.Size([665950])
-GETTING dataloaders: 149.22113728523254
-STARTING TRAINING…
-Start training...
-
- Epoch  |  Train Loss  |  dev Loss  |  dev Acc  |  Elapsed 
-------------------------------------------------------------
-Traceback (most recent call last):
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 173, in <module>
-    main()
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 170, in main
-    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=50, model_name="mr_cnn_rand")
-  File "/users/kotmani/Defi2/models/CNN/utils.py", line 30, in train
-    t0_epoch = time.time()
-NameError: name 'time' is not defined

@@ -13,4 +13,4 @@ conda activate defi2
 #Ajouter le programme que vous voulez lancer
 SCRIPT_DIR="/users/kotmani/Defi2/models/CNN"
 
-python3 $SCRIPT_DIR/create_cnn_model.py
+python3 $SCRIPT_DIR/cnn_predictions.py

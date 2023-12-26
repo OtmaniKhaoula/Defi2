@@ -1,24 +1,0 @@
-GPU disponible!
-DATA LOADING: 15.055764436721802
-Tokenizing...
-
-2 TOKENIZE 4.789957046508789
-2 ENCODE 398.93123841285706
-input_ids_train =  [514 148 990 ... 0 0 0]
- file =  /users/kotmani/Defi2/glove
-Loading pretrained vectors...
-0it [00:00, ?it/s]5it [00:00, 43.31it/s]1102it [00:00, 6083.58it/s]3558it [00:00, 14233.34it/s]6307it [00:00, 19356.65it/s]9186it [00:00, 22707.65it/s]12298it [00:00, 25540.31it/s]14875it [00:00, 24863.33it/s]18240it [00:00, 27590.94it/s]21019it [00:00, 25211.47it/s]24531it [00:01, 28042.95it/s]28203it [00:01, 30558.39it/s]32025it [00:01, 32800.70it/s]35351it [00:01, 30021.88it/s]39293it [00:01, 32628.02it/s]43294it [00:01, 34722.59it/s]46832it [00:01, 31568.17it/s]50772it [00:01, 33694.26it/s]55024it [00:01, 36155.38it/s]59343it [00:02, 38159.73it/s]63684it [00:02, 39679.25it/s]67949it [00:02, 40546.52it/s]72385it [00:02, 41668.81it/s]76850it [00:02, 42551.43it/s]81127it [00:02, 41336.09it/s]85283it [00:02, 40600.80it/s]89360it [00:02, 36002.39it/s]93821it [00:02, 38308.14it/s]97749it [00:03, 35097.52it/s]101825it [00:03, 36596.98it/s]106294it [00:03, 38817.06it/s]110263it [00:03, 39005.05it/s]114748it [00:03, 40678.69it/s]119157it [00:03, 41667.78it/s]123477it [00:03, 42110.87it/s]127997it [00:03, 43020.97it/s]132321it [00:03, 42793.86it/s]136616it [00:04, 34477.85it/s]140917it [00:04, 36643.69it/s]144808it [00:04, 33554.16it/s]149157it [00:04, 35375.45it/s]152851it [00:04, 31233.43it/s]156669it [00:04, 32949.12it/s]160124it [00:04, 31408.84it/s]164615it [00:04, 34914.57it/s]169141it [00:04, 37713.58it/s]173037it [00:05, 33173.59it/s]177497it [00:05, 36117.40it/s]181965it [00:05, 38418.29it/s]186454it [00:05, 40211.02it/s]190611it [00:05, 40594.03it/s]194754it [00:05, 38120.57it/s]198803it [00:05, 38776.48it/s]202746it [00:05, 36284.71it/s]206445it [00:05, 33908.37it/s]209904it [00:06, 31482.63it/s]214289it [00:06, 34702.51it/s]218770it [00:06, 37439.73it/s]222609it [00:06, 34107.29it/s]227017it [00:06, 36750.03it/s]231396it [00:06, 38682.12it/s]235881it [00:06, 40419.34it/s]240141it [00:06, 41041.76it/s]244653it [00:06, 42226.47it/s]249071it [00:07, 42798.96it/s]253453it [00:07, 43078.99it/s]257943it [00:07, 43603.35it/s]262412it [00:07, 43925.74it/s]266817it [00:07, 43878.96it/s]271297it [00:07, 44151.78it/s]275719it [00:07, 42187.26it/s]279960it [00:07, 42207.19it/s]284197it [00:07, 38472.31it/s]288648it [00:07, 40133.75it/s]292996it [00:08, 41076.94it/s]297460it [00:08, 42100.10it/s]301927it [00:08, 42847.46it/s]306426it [00:08, 43465.78it/s]310795it [00:08, 43522.89it/s]315287it [00:08, 43930.37it/s]319692it [00:08, 40979.66it/s]323837it [00:08, 37350.88it/s]327960it [00:08, 38394.39it/s]332438it [00:09, 40167.68it/s]336758it [00:09, 41027.73it/s]341216it [00:09, 42051.06it/s]345536it [00:09, 42383.41it/s]349903it [00:09, 42760.32it/s]354388it [00:09, 43376.81it/s]358846it [00:09, 43732.24it/s]363694it [00:09, 45145.41it/s]369381it [00:09, 48645.73it/s]375003it [00:09, 50909.48it/s]380508it [00:10, 52145.75it/s]386172it [00:10, 53491.07it/s]391867it [00:10, 54526.26it/s]397443it [00:10, 54893.34it/s]400001it [00:10, 38484.84it/s]
-There are 24077 / 91560 pretrained vectors found.
- Une partie d'embedding =  300
-Traceback (most recent call last):
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 206, in <module>
-    main()
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 189, in main
-    train_dataloader, dev_dataloader, vocab_size = tokenize_and_encode()
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 140, in tokenize_and_encode
-    train_dataloader, dev_dataloader = data_loader(train_inputs, dev_inputs, train_labels, dev_labels, batch_size=512)
-  File "/users/kotmani/Defi2/models/CNN/utils.py", line 213, in data_loader
-    
-  File "/users/kotmani/Defi2/models/CNN/utils.py", line 213, in <genexpr>
-    
-TypeError: can't convert np.ndarray of type numpy.object_. The only supported types are: float64, float32, float16, complex64, complex128, int64, int32, int16, int8, uint8, and bool.

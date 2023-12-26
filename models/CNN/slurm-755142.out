@@ -1,26 +1,0 @@
-GPU disponible!
-DATA LOADING: 14.486770629882812
-Tokenizing...
-
-2 TOKENIZE 5.323101758956909
-2 ENCODE 125.8906307220459
-input_ids_train =  [514 148 990 ...   0   0   0]
- file =  /users/kotmani/Defi2/glove
-Loading pretrained vectors...
-0it [00:00, ?it/s]3192it [00:00, 31902.23it/s]7139it [00:00, 36349.95it/s]11508it [00:00, 39695.89it/s]16272it [00:00, 42830.18it/s]21386it [00:00, 45818.45it/s]26831it [00:00, 48750.90it/s]32647it [00:00, 51825.92it/s]38784it [00:00, 54857.59it/s]45152it [00:00, 57614.84it/s]51688it [00:01, 60004.26it/s]58497it [00:01, 62477.79it/s]65448it [00:01, 64615.84it/s]72567it [00:01, 66606.60it/s]79813it [00:01, 68371.19it/s]87113it [00:01, 69763.82it/s]94668it [00:01, 71503.30it/s]102220it [00:01, 72709.70it/s]109782it [00:01, 73581.81it/s]117407it [00:01, 74382.35it/s]125039it [00:02, 74953.96it/s]132836it [00:02, 75857.50it/s]140737it [00:02, 76796.56it/s]148564it [00:02, 77237.84it/s]156497it [00:02, 77864.06it/s]164484it [00:02, 78463.43it/s]172449it [00:02, 78810.63it/s]180560it [00:02, 79498.65it/s]188665it [00:02, 79960.56it/s]196753it [00:02, 80233.93it/s]204858it [00:03, 80477.32it/s]212934it [00:03, 80560.24it/s]221012it [00:03, 80625.67it/s]229075it [00:03, 80613.84it/s]237157it [00:03, 80674.95it/s]245293it [00:03, 80879.60it/s]253443it [00:03, 81064.05it/s]261640it [00:03, 81333.74it/s]269799it [00:03, 81409.76it/s]277999it [00:03, 81585.10it/s]286269it [00:04, 81917.58it/s]294461it [00:04, 81798.92it/s]302682it [00:04, 81920.97it/s]310903it [00:04, 82007.05it/s]319161it [00:04, 82177.58it/s]327442it [00:04, 82366.49it/s]335679it [00:04, 82342.95it/s]343968it [00:04, 82503.25it/s]352219it [00:04, 82503.53it/s]360470it [00:04, 82401.49it/s]368786it [00:05, 82627.71it/s]377049it [00:05, 82537.57it/s]385313it [00:05, 82566.04it/s]393614it [00:05, 82695.59it/s]400001it [00:05, 74364.35it/s]
-There are 24077 / 91560 pretrained vectors found.
- Une partie d'embedding =  300
-AAAA torch.Size([665950, 2677])
-BBBB torch.Size([665962])
-Traceback (most recent call last):
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 206, in <module>
-    main()
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 189, in main
-    train_dataloader, dev_dataloader, vocab_size = tokenize_and_encode()
-  File "/users/kotmani/Defi2/models/CNN/cnn.py", line 140, in tokenize_and_encode
-    train_dataloader, dev_dataloader = data_loader(train_inputs, dev_inputs, train_labels, dev_labels, batch_size=512)
-  File "/users/kotmani/Defi2/models/CNN/utils.py", line 221, in data_loader
-    train_data = TensorDataset(train_inputs, train_labels)
-  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/utils/data/dataset.py", line 204, in __init__
-    assert all(tensors[0].size(0) == tensor.size(0) for tensor in tensors), "Size mismatch between tensors"
-AssertionError: Size mismatch between tensors

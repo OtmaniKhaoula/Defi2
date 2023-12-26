@@ -1,0 +1,42 @@
+GPU disponible!
+DATA LOADING: 9.496052503585815
+Tokenizing...
+
+Loading pretrained vectors...
+There are 48895 / 217046 pretrained vectors found.
+Tokenizing...
+
+Loading pretrained vectors...
+There are 24077 / 91560 pretrained vectors found.
+GETTING dataloaders: 146.1337332725525
+STARTING TRAINING…
+Start training...
+
+ Epoch  |  Train Loss  |  dev Loss  |  dev Acc  |  Elapsed 
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "/users/kotmani/Defi2/models/CNN/create_cnn_model.py", line 110, in <module>
+    main()
+  File "/users/kotmani/Defi2/models/CNN/create_cnn_model.py", line 107, in main
+    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=100, model_name="lr=0,5-emb-dim=300-all")
+  File "/users/kotmani/Defi2/models/CNN/utils.py", line 51, in train
+    logits = model(b_input_ids)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/kotmani/Defi2/models/CNN/CNN_NLP.py", line 73, in forward
+    x_embed = self.embedding(input_ids).float()
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/modules/sparse.py", line 162, in forward
+    return F.embedding(
+  File "/users/kotmani/.conda/envs/defi2/lib/python3.9/site-packages/torch/nn/functional.py", line 2233, in embedding
+    return torch.embedding(weight, input, padding_idx, scale_grad_by_freq, sparse)
+RuntimeError: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
