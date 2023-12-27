@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=30
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-task=1
-#SBATCH --mem=100G
+#SBATCH --mem=120G
 #SBATCH --time=20:00:00
 
 source /etc/profile.d/conda.sh

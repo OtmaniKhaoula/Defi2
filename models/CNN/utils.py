@@ -128,9 +128,6 @@ def evaluate(model, test_dataloader):
     return test_loss, test_accuracy
 
 def predictions(model, test_dataloader):
-    # Specify loss function
-    loss_fn = nn.CrossEntropyLoss()
-
     # Put the model into the evaluation mode. The dropout layers are disabled
     # during the test time.
     model.eval()
@@ -138,25 +135,26 @@ def predictions(model, test_dataloader):
     # Tracking variables
     test_accuracy = []
     test_loss = []
+    all_preds = []
+    all_keys = []
 
     # For each batch in our validation set...
     for batch in test_dataloader:
         # Load batch to GPU
+
         b_input_ids, b_labels = tuple(t.to(device) for t in batch)
 
         # Compute logits
         with torch.no_grad():
             logits = model(b_input_ids)
 
-        # Compute loss
-        loss = loss_fn(logits, b_labels)
-        # print("loss test = ", loss)
-        test_loss.append(loss.item())
-
         # Get the predictions
         preds = torch.argmax(logits, dim=1).flatten()
+        all_preds.append(preds.tolist())
+        all_keys.append(b_labels.tolist())
 
-    return preds
+    torch.cuda.empty_cache()
+    return all_preds, all_keys
 
 """Tokenize texts, build vocabulary and find maximum sentence length.
 
@@ -168,12 +166,12 @@ Returns:
     max_len (int): Maximum sentence length
 """
 # tokenization
-def tokenize(texts, grades, max_len, test=False):
+def tokenize(texts, grades, max_len, word2idx, test=False):
 
+    key_dict = {}
+    k = {}
     tokenized_texts = []
     labels = []
-
-    word2idx = {}
 
     # Add <pad> and <unk> tokens to the vocabulary
     word2idx['<pad>'] = 0
@@ -186,17 +184,22 @@ def tokenize(texts, grades, max_len, test=False):
             if not test:
                 labels.append(int(float(grades[key])*2-1))
             else:
-                labels.append(0)
+                if key not in k:
+                    key_dict[len(k)] = key
+                    k[key] = len(k)
+
+                labels.append(k[key])
 
             tokenized_texts.append(texts[key])
             for word in texts[key]:
                 if not word in word2idx:
-                    word2idx[word] = idx
-                    idx += 1
+                    if not test:
+                        word2idx[word] = idx
+                        idx += 1
             
-            max_len = max(max_len, len(texts[key]))
+            #max_len = max(max_len, len(texts[key]))
 
-    return tokenized_texts, word2idx, labels, max_len
+    return tokenized_texts, word2idx, labels, max_len, key_dict
 
 """Pad each sentence to the maximum sentence length and encode tokens to
 their index in the vocabulary.
@@ -208,8 +211,12 @@ Returns:
 def encode(tokenized_texts, word2idx, max_len):
 
     input_ids = [
-        [word2idx.get(token, word2idx['<pad>']) for token in tokens] + [word2idx['<pad>']] * (max_len - len(tokens))
-        for tokens in tokenized_texts
+    ([word2idx.get(token, word2idx['<unk>'])
+        for token in tokens[:max_len]] 
+        + [word2idx['<pad>']] * (max_len - len(tokens)))
+
+    if len(tokens) < max_len else [word2idx.get(token, word2idx['<pad>']) for token in tokens[:max_len]]
+    for tokens in tokenized_texts
     ]
 
     return np.array(input_ids)
@@ -225,60 +232,32 @@ Returns:
         the size of word2idx and d is embedding dimension
 """
 
-def tokenize_and_encode(comments, grades, max_len, test=False):
+def tokenize_and_encode(comments, grades, max_len, word2idx, test=False):
     # Download Glove Embeddings
     #URL = "https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip"
     FILE = f"{path}/glove"
 
 
     # Tokenize, build vocabulary, encode tokens
-    print("Tokenizing...\n")
+    print("Tokenizing...\n", flush=True)
 
-    tokenized_texts, word2idx, labels, max_len = tokenize(comments, grades, max_len, test=test)
+    tokenized_texts, word2idx, labels, max_len, key_dict = tokenize(comments, grades, max_len, word2idx, test=test)
 
+    print("Encoding…", flush=True)
     input_ids = encode(tokenized_texts, word2idx, max_len)
 
-    # Load pretrained vectors
-    embeddings = load_pretrained_vectors(word2idx, f"{FILE}/glove.6B.300d.txt")
-    embeddings = torch.tensor(embeddings)
+    print("dataloader…", flush=True)
 
-    # Load data to PyTorch DataLoader
-    inputs = input_ids
+    dataloader = data_loader(input_ids, labels, test=test, batch_size=256)
 
-
-    dataloader = data_loader(inputs, labels, batch_size=128)
-
-    return dataloader, len(word2idx)
-    
-# load embeddings
-def load_pretrained_vectors(word2idx, fname):
-
-    print("Loading pretrained vectors...")
-    fin = open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
-    # n, d = map(int, fin.readline().split())
-    d=300
-
-    # Initilize random embeddings
-    embeddings = np.random.uniform(-0.25, 0.25, (len(word2idx), d))
-    embeddings[word2idx['<pad>']] = np.zeros((d,))
-
-    # Load pretrained vectors
-    count = 0
-    for line in fin:
-        tokens = line.rstrip().split(' ')
-        word = tokens[0]
-        if word in word2idx:
-            count += 1
-            embeddings[word2idx[word]] = np.array(tokens[1:], dtype=np.float32)
-
-    print(f"There are {count} / {len(word2idx)} pretrained vectors found.")
-
-    return embeddings
+    print("return", flush=True)
+    torch.cuda.empty_cache()
+    return dataloader, len(word2idx), word2idx, key_dict
 
 # DataLoader
-def data_loader(inputs, labels, batch_size=128):
+def data_loader(inputs, labels, test=False, batch_size=128):
     # Convert data type to torch.Tensor
-    inputs, labels = tuple(torch.tensor(data).to(device) for data in
+    inputs, labels = tuple(torch.tensor(data) for data in
           [inputs, labels])
 
     # Specify batch_size
@@ -286,7 +265,10 @@ def data_loader(inputs, labels, batch_size=128):
 
     # Create DataLoader 
     data = TensorDataset(inputs, labels)
-    sampler = RandomSampler(data)
-    dataloader = DataLoader(data, sampler=sampler, batch_size=batch_size)
+    
+    if test:
+        dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
+    else:
+        dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
     return dataloader

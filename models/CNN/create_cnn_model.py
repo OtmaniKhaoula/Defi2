@@ -12,7 +12,7 @@ import time
 from nltk.tokenize import word_tokenize
 
 from CNN_NLP import CNN_NLP
-from utils import train, load_pretrained_vectors, data_loader, tokenize_and_encode
+from utils import train, data_loader, tokenize_and_encode
 
 #nltk.download("all")
 
@@ -38,19 +38,35 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 start = time.time()
 
 reviews_grades_train = np.load(f"{path}/processed_data/train/reviews_grades.npy", allow_pickle=True).item()
-comments_train = np.load(f"{path}/processed_data/train/comments.npy", allow_pickle=True).item()
+comments_train = np.load(f"{path}/processed_data/train/comments_clean.npy", allow_pickle=True).item()
+metadata_train = np.load(f"{path}/processed_data/train/movie_metadata.npy", allow_pickle=True).item()
+review_movie_train = np.load(f"{path}/processed_data/train/reviews_movie.npy", allow_pickle=True).item()
 reviews_users_train = np.load(f"{path}/processed_data/train/reviews_users.npy", allow_pickle=True).item()
-reviews_movie_train = np.load(f"{path}/processed_data/train/reviews_movie.npy", allow_pickle=True).item()
 
 reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades.npy", allow_pickle=True).item()
-comments_dev = np.load(f"{path}/processed_data/dev/comments.npy", allow_pickle=True).item()
+comments_dev = np.load(f"{path}/processed_data/dev/comments_clean.npy", allow_pickle=True).item()
+metadata_dev = np.load(f"{path}/processed_data/dev/movie_metadata.npy", allow_pickle=True).item()
+review_movie_dev = np.load(f"{path}/processed_data/dev/reviews_movie.npy", allow_pickle=True).item()
 reviews_users_dev = np.load(f"{path}/processed_data/dev/reviews_users.npy", allow_pickle=True).item()
-reviews_movie_dev = np.load(f"{path}/processed_data/dev/reviews_movie.npy", allow_pickle=True).item()
+
+
+i = 0
+for key in comments_train:
+
+    if not comments_train[key] == "" and not reviews_users_train[key] == "":
+        comments_train[key] = comments_train[key] + [reviews_users_train[key]] + metadata_train[movie].split(" ") + [movie]
+
+
+for key in comments_dev:
+    movie = review_movie_dev[key]
+    
+    if not comments_dev[key] == "" and not reviews_users_dev[key] == "":
+        comments_dev[key] = comments_dev[key] + [reviews_users_dev[key]] + metadata_dev[movie].split(" ") + [movie]
 
 
 print("DATA LOADING:", time.time()-start, flush=True)
 
-def initilize_model(pretrained_embedding=None, freeze_embedding=False, vocab_size=None,
+def initialize_model(pretrained_embedding=None, freeze_embedding=False, vocab_size=None,
                     embed_dim=300, filter_sizes=[3, 4, 5], num_filters=[100, 100, 100],
                     num_classes=10, dropout=0.5, learning_rate=0.01, weight_decay=0):
 
@@ -88,14 +104,19 @@ def main():
 
     start = time.time()
     max_len = 2677
-    train_dataloader, vocab_size = tokenize_and_encode(comments_train, reviews_grades_train, max_len)
-    dev_dataloader, vocab_size = tokenize_and_encode(comments_dev, reviews_grades_dev, max_len)
+    word2idx = {}
+    train_dataloader, vocab_size, word2idx = tokenize_and_encode(comments_train, reviews_grades_train, max_len, word2idx)
+    dev_dataloader, vocab_size, word2idx = tokenize_and_encode(comments_dev, reviews_grades_dev, max_len, word2idx)
+    print("VOCAB SIZE", vocab_size, flush=True)
+
+    """test_dataloader, vocab_size, word2idx = tokenize_and_encode(comments_test, {}, max_len, word2idx, test=True)
+    print("FINAL VOCAB SIZE", vocab_size, flush=True)"""
 
     print("GETTING dataloaders:", time.time()-start, flush=True)
 
-    cnn_rand, optimizer = initilize_model(vocab_size=vocab_size,
+    cnn_rand, optimizer = initialize_model(vocab_size=vocab_size,
                                         embed_dim=300,
-                                        learning_rate=0.5,
+                                        learning_rate=1,
                                         dropout=0.5,
                                         weight_decay=1e-3)
 
@@ -104,7 +125,7 @@ def main():
 
     print("STARTING TRAINING…", flush=True)
     start = time.time()
-    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=100, model_name="lr=0,5-emb-dim=300-all")
+    best_acc, train_time = train(cnn_rand, optimizer, train_dataloader, dev_dataloader, epochs=100, model_name="lr=1-emb-dim=300-all-meta")
     print("END OF TRAINING:", time.time()-start, flush=True)
 
 main()
