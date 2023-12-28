@@ -7,3 +7,7 @@ graphics2.py
 stat2.py
 config.py
 *.svm
+models/CNN/models
+slurm-*
+models/CNN/outputs
+glove/*
