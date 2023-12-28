@@ -21,53 +21,58 @@ reviews_grades = {} #dictionnaire des review_id -> notes
 reviews_users = {}
 reviews_movie = {}
 movie_grades = {}
-comments = {}
+corpus = {}
 
-def gen_dicts():
+def gen_dicts(test=False):
     for comment in root.findall("comment"):
         review_id = comment.find('review_id').text
-        note = float(comment.find('note').text.replace(',', '.'))
+        if not test:
+            note = float(comment.find('note').text.replace(',', '.'))
         commentaire = comment.find('commentaire').text
         movie_id = comment.find('movie').text
         user_id = comment.find('user_id').text
 
 
         #map review with it's grade
-        reviews_grades[review_id] = note
+        if not test:
+            reviews_grades[review_id] = note
+
+            #map movie with grades
+            if movie_id in movie_grades:
+                movie_grades[movie_id].append(note)
+            else:
+                movie_grades[movie_id] = [note]
+
         reviews_movie[review_id] = movie_id
         reviews_users[review_id] = user_id
-        comments[review_id] = commentaire
+        corpus[review_id] = commentaire
 
-        #map movie with grades
-        if movie_id in movie_grades:
-            movie_grades[movie_id].append(note)
-        else:
-            movie_grades[movie_id] = [note]
 
-    np.save(f"{path}/processed_data/{file}/comments.npy", comments)
-        
-    cleaned_comments = data_processing.preprocessing_text(comments)
+    cleaned_corpus = data_processing.preprocessing_text(corpus)
     #fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades, reviews_users, reviews_movie, file)
 
-    np.save(f"{path}/processed_data/{file}/movie_grades.npy", movie_grades)
+    if not test:
+        np.save(f"{path}/processed_data/{file}/movie_grades.npy", movie_grades)
     np.save(f"{path}/processed_data/{file}/reviews_movie.npy", reviews_movie)
     np.save(f"{path}/processed_data/{file}/reviews_grades.npy", reviews_grades)
     np.save(f"{path}/processed_data/{file}/reviews_users.npy", reviews_users)
-    np.save(f"{path}/processed_data/{file}/comments_clean.npy", cleaned_comments)
+    np.save(f"{path}/processed_data/{file}/comments_clean.npy", cleaned_corpus)
+    np.save(f"{path}/processed_data/{file}/comments.npy", corpus)
+
 
 def gen_test_corpus():
     for comment in root.findall("comment"):
         review_id = comment.find('review_id').text
         commentaire = comment.find('commentaire').text
        
-        comments[review_id] = commentaire
+        corpus[review_id] = commentaire
 
-    np.save(f"{path}/processed_data/{file}/comments.npy", comments)
-    cleaned_corpus = data_processing.preprocessing_test(comments)
-    np.save(f"{path}/processed_data/{file}/comments_clean.npy", cleaned_corpus)
+    cleaned_corpus = data_processing.preprocessing_test(corpus)
+    np.save(f"{path}/processed_data/{file}/comments.npy", cleaned_corpus)
 
 
 if not file == 'test':
     gen_dicts()
 else:
+    gen_dicts(test=True)
     gen_test_corpus()
