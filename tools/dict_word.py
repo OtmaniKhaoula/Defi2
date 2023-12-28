@@ -11,9 +11,9 @@ print("DIRECTORY", directory)
 
 file = sys.argv[1]
 
-import configg
+import config
 
-path = configg.paths['url']
+path = config.paths['url']
 print(path)
 
 comments = np.load(f"{path}/processed_data/{file}/comments.npy", allow_pickle=True).item()
