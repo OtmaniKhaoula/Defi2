@@ -15,7 +15,8 @@ import configg
 
 path = configg.paths['url']
 print(path)
-comments_train = np.load(f"{path}/processed_data/{file}/comments.npy", allow_pickle=True).item()
+
+comments = np.load(f"{path}/processed_data/{file}/comments.npy", allow_pickle=True).item()
 #print("structure fichier = ", comments_train)
 
 cpt = 0
@@ -37,6 +38,8 @@ with open("../polarity_word.txt", encoding = "latin-1") as fichier:
         # Retirer les éventuels espaces autour des parties
         ligne_tokenized = [l.strip() for l in ligne]
         ligne_tokenized[1] = ligne_tokenized[1].replace('"', '')
+        if(len(ligne_tokenized[1].split(" "))>1 or len(ligne_tokenized[1].split(">"))>1):
+            continue
         #print(ligne_tokenized)
         #ligne_tokenized = ligne.split(";")
         if(ligne_tokenized[2] == ligne_tokenized[4]):
@@ -63,39 +66,19 @@ print("film = ", dict_emotion["film"])
 # Ajouter les polarités dans les commentaires
 cpt = 0
 list_keyword = list(dict_emotion.keys())
-for review in comments_train.keys():
-    review_split = comments_train[review].split(" ")
+for review in comments.keys():
+    if (isinstance(comments[review], float)):
+        continue
+    review_split = comments[review].split(" ")
     for word, i in zip(review_split, [i for i in range(len(review_split))]):
         if (word in list_keyword):
             review_split[i] = word + " " + dict_emotion[word]
             #print("review_split = ", review_split[i])
     cpt += 1
-    print("cpt = ", cpt)
-    #if cpt % 1000 == 0:
-    #    print("cpt = ", cpt)
-    #if(cpt>50):
-    #    break
-    comments_train[review] = " ".join(review_split)
+    #print("cpt = ", cpt)
+    if cpt % 100 == 0:
+        print("cpt = ", cpt)
+    comments[review] = " ".join(review_split)
     #print("modified_words = ", comments_train[review])
-    """
-    for key in dict_emotion.keys():
-        #print("key = ", key)
-        #print(comments_train[review])
-        if(key in comments_train[review]):
-            #print(dict_emotion[key])
-            words = comments_train[review].split()
-
-            modified_words = []
-
-            for word in words:
-                modified_words.append(word)
-                if key == word:
-                    #print("key = ", key)
-                    #print("word = ", word)
-                    modified_words.append(dict_emotion[key])
-
-            comments_train[review] = " ".join(modified_words)
-            print("modified_words = ", modified_words)
-    #print("structure fichier = ", comments_train[review])
-    """
-np.save(f"{path}/processed_data/{file}/comments_with_polarities.npy", comments_train)
+    
+np.save(f"{path}/processed_data/{file}/comments_with_polarities.npy", comments)
