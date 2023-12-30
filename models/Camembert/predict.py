@@ -70,7 +70,7 @@ new_structure = nn.Sequential(
 )
 model.classifier = new_structure
 # Charger le dictionnaire d'état dans le modèle
-model.load_state_dict(torch.load("sentiments.pt", map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu')))
+model.load_state_dict(torch.load("sentiments-batch256-150000train.pt", map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu')))
 model = model.to(device)
 
 criterion = torch.nn.CrossEntropyLoss()

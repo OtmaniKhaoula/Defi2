@@ -14,5 +14,5 @@ conda activate defi2
 #Ajouter le programme que vous voulez lancer
 SCRIPT_DIR="/users/kotmani/Defi2/models/Camembert"
 
-python3 $SCRIPT_DIR/camembert-finetuning.py
+python3 $SCRIPT_DIR/bert_eval.py
 

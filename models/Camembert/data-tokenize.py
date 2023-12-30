@@ -40,7 +40,7 @@ df_reviews_grades_train['notes'] = df_reviews_grades_train['notes'].astype(int)
 
 # Jointure
 data_train = pd.merge(df_comments_train, df_reviews_grades_train, on='id_reviews')
-data_train = data_train.iloc[:, :]
+data_train = data_train.iloc[:150000, :]
 
 comments_train = data_train['comments'].values.tolist()
 notes_train = data_train['notes'].values.tolist()
@@ -175,8 +175,8 @@ test_dataset = TensorDataset(
     encoded_batch_test['attention_mask'],
     notes_test)
 
-torch.save(train_dataset, f"{path}/models/Camembert/camembert_tokenized_data/train_dataset")
-torch.save(dev_dataset, f"{path}/models/Camembert/camembert_tokenized_data/dev_dataset")
-torch.save(test_dataset, f"{path}/models/Camembert/camembert_tokenized_data/test_dataset")
+torch.save(train_dataset, f"{path}/models/Camembert/camembert_tokenized_data/train_dataset-150000")
+#torch.save(dev_dataset, f"{path}/models/Camembert/camembert_tokenized_data/dev_dataset")
+#torch.save(test_dataset, f"{path}/models/Camembert/camembert_tokenized_data/test_dataset")
 
 print("End tokenisation…", flush=True)

@@ -35,15 +35,15 @@ else:
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #print("device = ", device)
 
-batch_size = 32
+batch_size = 256
 text = 'cmarkea/distilcamembert-base-sentiment'
 
 # On cree les DataLoaders d'entrainement et de validation
 # Le dataloader est juste un objet iterable
 # On le configure pour iterer le jeu d'entrainement de façon aleatoire et creer les batchs.
 print("Loading tokenized dataset…", flush=True)
-train_dataset = torch.load(f"{path}/models/BERT/camembert_tokenized_data/train_dataset")
-validation_dataset = torch.load(f"{path}/models/BERT/camembert_tokenized_data/dev_dataset")
+train_dataset = torch.load(f"{path}/models/Camembert/camembert_tokenized_data/train_dataset-150000")
+validation_dataset = torch.load(f"{path}/models/Camembert/camembert_tokenized_data/dev_dataset")
 
 train_dataloader = DataLoader(
             train_dataset,
@@ -225,7 +225,7 @@ for e in range(epochs):
         # Si la perte de validation s'améliore, enregistrez le modèle et réinitialisez le compteur
         best_val_loss = valid_loss_sum
         epochs_without_improvement = 0
-        torch.save(model.state_dict(), "./sentiments.pt")
+        torch.save(model.state_dict(), "./sentiments-batch256-150000train.pt")
     else:
         # Sinon, incrémentez le compteur
         epochs_without_improvement += 1
