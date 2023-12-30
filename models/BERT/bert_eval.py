@@ -87,10 +87,11 @@ def predict(reviews_and_ids, model=model):
         #print(reviews_and_ids_2)
         ids, reviews = zip(*reviews_and_ids_2)
         input_ids, attention_mask, ids = preprocess(reviews, ids=ids)
-        retour = model(input_ids, attention_mask=attention_mask)
-        print("retour = ", type(retour))
-
-        predicted_classes = torch.argmax(retour[0], dim=1)
+        prediction = model(input_ids, attention_mask=attention_mask)
+        prediction = prediction[0][:,0,:]
+        print("prediction = ", prediction)
+        predicted_classes = torch.argmax(prediction, dim=-1)
+        print("retour = ",  predicted_classes)
         #print(predicted_classes)
         predictions_with_ids = list(zip(ids, predicted_classes.tolist()))
 
