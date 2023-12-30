@@ -41,29 +41,20 @@ metadata_test = np.load(f"{path}/processed_data/test/movie_metadata.npy", allow_
 review_movie_test = np.load(f"{path}/processed_data/test/reviews_movie.npy", allow_pickle=True).item()
 reviews_users_test = np.load(f"{path}/processed_data/test/reviews_users.npy", allow_pickle=True).item()
 
-i = 0
 for key in comments_train:
     movie = review_movie_train[key]
 
     if not comments_train[key] == "" and not reviews_users_train[key] == "":
         comments_train[key] = comments_train[key] + [reviews_users_train[key]] + metadata_train[movie].split(" ") + [movie]
 
-    if i == 0:
-        print("TRAIN COMMENTS WITH EVERYTHING", comments_train[key], flush=True)
-        i+=1
 
-i = 0
 for key in comments_dev:
     movie = review_movie_dev[key]
     
     if not comments_dev[key] == "" and not reviews_users_dev[key] == "":
         comments_dev[key] = comments_dev[key] + [reviews_users_dev[key]] + metadata_dev[movie].split(" ") + [movie]
 
-    if i == 0:
-        print("DEV COMMENTS WITH EVERYTHING", comments_dev[key], flush=True)
-        i+=1
 
-i = 0
 for key in comments_test:
     movie = review_movie_test[key]
     
@@ -71,11 +62,6 @@ for key in comments_test:
         comments_test[key] = comments_test[key] + [reviews_users_test[key]] + metadata_test[movie].split(" ") + [movie]
     else:
         comments_test[key] = [comments_test[key]] + [reviews_users_test[key]] + metadata_test[movie].split(" ") + [movie]
-
-    if i == 0:
-        print("TEST COMMENTS WITH EVERYTHING", comments_test[key], flush=True)
-        i+=1
-
 
 max_len = 2677
 cnn_rand = torch.load(f"{path}/models/CNN/models/lr=0,8-drop0,25-emb-dim=300-all-meta_best_model.pt")
