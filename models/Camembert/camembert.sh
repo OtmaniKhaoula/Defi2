@@ -13,5 +13,5 @@ conda activate defi2
 #Ajouter le programme que vous voulez lancer
 SCRIPT_DIR="/users/kotmani/Defi2/models/BERT"
 
-python3 $SCRIPT_DIR/bert_delete_last.py
+python3 $SCRIPT_DIR/camembert_fientuning.py
 

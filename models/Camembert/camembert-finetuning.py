@@ -19,172 +19,32 @@ from transformers import CamembertForSequenceClassification, CamembertTokenizer,
 import sys, os
 import torch.nn as nn
 
-directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+directory = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(directory)
-
-#path = config.paths['url']
-#path = "C:/Users/Utilisateur/Documents/M2/Application_innovation/Sujet_2/new_Defi2"
 
 import config
 path = config.paths['url']
 
 
 if torch.cuda.is_available():
-    print("GPU disponible!")
+    print("GPU disponible!", flush=True)
 else:
-    print("Aucun GPU disponible. Vérifiez votre configuration.")
+    print("Aucun GPU disponible. Vérifiez votre configuration.", flush=True)
 
 # Vérifier la disponibilité du GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #print("device = ", device)
 
-"""
-Chargement du jeu de donnees d'apprentissage
-"""
-
-reviews_grades_train = np.load(f"{path}/processed_data/train/reviews_grades.npy", allow_pickle=True).item()
-comments_train = np.load(f"{path}/processed_data/train/comments.npy", allow_pickle=True).item()
-reviews_users_train = np.load(f"{path}/processed_data/train/reviews_users.npy", allow_pickle=True).item()
-reviews_movie_train = np.load(f"{path}/processed_data/train/reviews_movie.npy", allow_pickle=True).item()
-
-# Convertir le dictionnaire en DataFrame avec une colonne pour les clés et une colonne pour les valeurs
-df_comments_train = pd.DataFrame(list(comments_train.items()), columns=['id_reviews', 'comments'])
-df_reviews_grades_train = pd.DataFrame(list(reviews_grades_train.items()), columns=['id_reviews', 'notes'])
-df_reviews_grades_train['notes'] = df_reviews_grades_train['notes'] * 2 - 1
-df_reviews_grades_train['notes'] = df_reviews_grades_train['notes'].astype(int)
-
-# Jointure
-data_train = pd.merge(df_comments_train, df_reviews_grades_train, on='id_reviews')
-data_train = data_train.iloc[:40, :]
-
-comments_train = data_train['comments'].values.tolist()
-notes_train = data_train['notes'].values.tolist()
-
-"""
-Chargement du jeu de donnees de développement
-"""
-
-reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades.npy", allow_pickle=True).item()
-comments_dev = np.load(f"{path}/processed_data/dev/comments.npy", allow_pickle=True).item()
-reviews_users_dev = np.load(f"{path}/processed_data/dev/reviews_users.npy", allow_pickle=True).item()
-reviews_movie_dev = np.load(f"{path}/processed_data/dev/reviews_movie.npy", allow_pickle=True).item()
-
-# Convertir le dictionnaire en DataFrame avec une colonne pour les clés et une colonne pour les valeurs
-df_comments_dev = pd.DataFrame(list(comments_dev.items()), columns=['id_reviews', 'comments'])
-df_reviews_grades_dev = pd.DataFrame(list(reviews_grades_dev.items()), columns=['id_reviews', 'notes'])
-df_reviews_grades_dev['notes'] = df_reviews_grades_dev['notes'] * 2 - 1
-df_reviews_grades_dev['notes'] = df_reviews_grades_dev['notes'].astype(int)
-
-# Jointure
-data_dev = pd.merge(df_comments_dev, df_reviews_grades_dev, on='id_reviews')
-data_dev = data_dev.iloc[:24, :]
-
-comments_dev = data_dev['comments'].values.tolist()
-notes_dev = data_dev['notes'].values.tolist()
-
-#print("comments_dev = ", comments_dev[:2])
-#print("notes_dev = ", notes_dev[:2])
-
-"""
-Ajouter les ids des utilisateurs et des films dans les commentaires
-"""
-"""
-data_train_user_movie = data_train.copy()
-data_train_user = data_train.copy()
-data_train_movie = data_train.copy()
-for i in range(data_train_user_movie.shape[0]):
-    id_review = data_train_user_movie.loc[i, "id_reviews"]
-    id_user = reviews_users_train[id_review]
-    id_movie = reviews_movie_train[id_review]
-    data_train_user_movie.loc[i, "comments"] = data_train_user_movie.loc[i, "comments"] + id_user + " " + id_movie
-    data_train_user.loc[i, "comments"] = data_train_user.loc[i, "comments"] + id_user
-    data_train_movie.loc[i, "comments"] = data_train_movie.loc[i, "comments"] + id_movie
-
-data_dev_user_movie = data_dev.copy()
-data_dev_user = data_dev.copy()
-data_dev_movie = data_dev.copy()
-or i in range(data_dev_user_movie.shape[0]):
-    id_review = data_dev_user_movie.loc[i, "id_reviews"]
-    id_user = reviews_users_dev[id_review]
-    id_movie = reviews_movie_dev[id_review]
-    data_dev_user_movie.loc[i, "comments"] = data_dev.loc[i, "comments"] + id_user + " " + id_movie
-    data_dev_user.loc[i, "comments"] = data_dev_user.loc[i, "comments"] + id_user
-    data_dev_movie.loc[i, "comments"] = data_dev_movie.loc[i, "comments"] + id_movie
-"""
-
-"""
-Encodage du texte
-"""
-# On charge l'objet "tokenizer"de camemBERT qui va servir a encoder
-# 'camebert-base' est la version de camembert qu'on choisit d'utiliser
-# cmarkea/distilcamembert-base-sentiment
-# 'do_lower_case' à True pour qu'on passe tout en miniscule
-text = 'cmarkea/distilcamembert-base-sentiment'
-#text = 'tblard/tf-allocine'
-TOKENIZER = CamembertTokenizer.from_pretrained(
-    text,
-    do_lower_case=True
-    )
-
-"""
-import transformers
-tokenizer = transformers.DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-"""
-
-# Taille max d'un commentaire
-MAX_LENGTH = 512
-
-for i in range(len(comments_train)):
-    if i % 10000 == 0:
-        print(f"Iteration {i}")
-    if comments_train[i] is None:
-        comments_train[i] = ""
-
-for i in range(len(comments_dev)):
-    if i % 10000 == 0:
-        print(f"Iteration {i}")
-    if comments_dev[i] is None:
-        comments_dev[i] = ""
-
-#print(type(comments_train))
-
-# La fonction batch_encode_plus encode un batch de donnees
-encoded_batch_train = TOKENIZER.batch_encode_plus(comments_train,
-                                            add_special_tokens=True,
-                                            max_length=MAX_LENGTH,
-                                            padding=True,
-                                            truncation=True,
-                                            return_attention_mask = True,
-                                            return_tensors = 'pt')
-
-encoded_batch_dev = TOKENIZER.batch_encode_plus(comments_dev,
-                                            add_special_tokens=True,
-                                            max_length=MAX_LENGTH,
-                                            padding=True,
-                                            truncation=True,
-                                            return_attention_mask = True,
-                                            return_tensors = 'pt')
-
-
-# On transforme la liste des sentiments en tenseur
-notes_train = torch.tensor(notes_train).to(device)
-notes_dev = torch.tensor(notes_dev).to(device)
- 
-# On met nos données sous forme de TensorDataset
-train_dataset = TensorDataset(
-    encoded_batch_train['input_ids'],
-    encoded_batch_train['attention_mask'],
-    notes_train)
-validation_dataset = TensorDataset(
-    encoded_batch_dev['input_ids'],
-    encoded_batch_dev['attention_mask'],
-    notes_dev)
- 
 batch_size = 32
- 
+text = 'cmarkea/distilcamembert-base-sentiment'
+
 # On cree les DataLoaders d'entrainement et de validation
 # Le dataloader est juste un objet iterable
 # On le configure pour iterer le jeu d'entrainement de façon aleatoire et creer les batchs.
+print("Loading tokenized dataset…", flush=True)
+train_dataset = torch.load(f"{path}/models/BERT/camembert_tokenized_data/train_dataset")
+validation_dataset = torch.load(f"{path}/models/BERT/camembert_tokenized_data/dev_dataset")
+
 train_dataloader = DataLoader(
             train_dataset,
             sampler = RandomSampler(train_dataset),
@@ -198,6 +58,7 @@ val_dataloader = DataLoader(
 """
 Chargement du modèle
 """
+print("Loading model…", flush=True)
 # distilBERT tokenizer
 #config = transformers.DistilBertConfig(dropout=0.2, attention_dropout=0.2)
 #dbert_pt = transformers.DistilBertModel.from_pretrained('distilbert-base-uncased', config=config)
@@ -205,14 +66,15 @@ Chargement du modèle
 # On prend la version pre-entrainee de DistilcamemBERT sur les sentiments
 model = CamembertForSequenceClassification.from_pretrained(text).to(device)
 # Appliquez la fonction ReLU
-model.classifier.out_proj = nn.Linear(in_features=768, out_features=10, bias=True)
+model.classifier.out_proj = nn.Linear(in_features=768, out_features=10, bias=True).to(device)
 # Ajoutez la couche ReLU entre les couches linéaires
 new_structure = nn.Sequential(
     nn.Dropout(p=0.2, inplace=False),
     nn.Linear(in_features=768, out_features=768, bias=True),
     nn.ReLU(),
     nn.Linear(in_features=768, out_features=10, bias=True)
-)
+).to(device)
+
 model.classifier = new_structure
 
 # Let's create a sample of size 5 from the training data
@@ -274,6 +136,7 @@ epochs_without_improvement = 0
 from datetime import datetime
 start_time = datetime.now()
 
+print("Training…", flush=True)
 # Loop on epochs
 for e in range(epochs):
     
@@ -332,7 +195,7 @@ for e in range(epochs):
         prediction_probs = nn.functional.softmax(prediction, dim=-1)
         predicted_classes = torch.argmax(prediction_probs, dim=-1)
         #print("prediction2 = ", prediction)
-        print("Y2 = ", y, "predicted_classes = ", predicted_classes)
+        #print("Y2 = ", y, "predicted_classes = ", predicted_classes, flush=True)
         #loss1 = criterion(predicted_classes.float(), y.float())
         #print("loss2 = ", loss1)
         loss = criterion(prediction_probs, y)
@@ -352,8 +215,8 @@ for e in range(epochs):
     train_accuracy.append(train_accuracy_value)
     valid_accuracy.append(valid_accuracy_value)    
         
-    print(f'Epoch {e+1} \t\t Training Loss: {train_loss_sum / len(train_dataloader) :10.3f} \t\t Validation Loss: {valid_loss_sum / len(val_dataloader) :10.3f}')
-    print(f'\t\t Training Accuracy: {train_accuracy_value :10.3%} \t\t Validation Accuracy: {valid_accuracy_value :10.3%}')
+    print(f'Epoch {e+1} \t\t Training Loss: {train_loss_sum / len(train_dataloader) :10.3f} \t\t Validation Loss: {valid_loss_sum / len(val_dataloader) :10.3f}', flush=True)
+    print(f'\t\t Training Accuracy: {train_accuracy_value :10.3%} \t\t Validation Accuracy: {valid_accuracy_value :10.3%}', flush=True)
     
     # Vérification de l'amélioration
     #print("best = ", best_val_loss)
@@ -369,12 +232,13 @@ for e in range(epochs):
 
     # Vérification de l'arrêt anticipé
     if epochs_without_improvement >= early_stopping_patience:
-        print(f"Arrêt anticipé après {e+1} époques sans amélioration.")
+        print(f"Arrêt anticipé a l'époch {e+1}, après {early_stopping_patience} époques sans amélioration.", flush=True)
         break
 
 # Measure time for training
 end_time = datetime.now()
 training_time_pt = (end_time - start_time).total_seconds()    
+print("Finished.", flush=True)
 
 
 
