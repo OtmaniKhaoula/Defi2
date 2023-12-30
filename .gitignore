@@ -1,5 +1,3 @@
-data/
-processed_data/*
 .DS_Store
 fastText/
 tools/new_stat.py
@@ -12,3 +10,6 @@ slurm-*
 models/CNN/outputs
 glove/*
 *.pt
+*.npy
+*dataset
+*.xml
