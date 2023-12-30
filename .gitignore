@@ -11,3 +11,4 @@ models/CNN/models
 slurm-*
 models/CNN/outputs
 glove/*
+*.pt

@@ -117,8 +117,8 @@ TOKENIZER = CamembertTokenizer.from_pretrained(
 # Taille max d'un commentaire
 MAX_LENGTH = 512
 
-#comments_train = [comment if comment is not None else "" for comment in comments_train]
-#comments_dev = [comment if comment is not None else "" for comment in comments_dev]
+comments_train = [comment if comment is not None else "" for comment in comments_train]
+comments_dev = [comment if comment is not None else "" for comment in comments_dev]
 
 print(comments_test_list[0], flush=True)
 print("None removed…", flush=True)
