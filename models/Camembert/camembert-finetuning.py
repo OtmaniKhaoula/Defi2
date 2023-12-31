@@ -119,24 +119,23 @@ for param in model.classifier.parameters():
 
 epochs = 15
 criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters())
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, eps=1e-8)
 
 # Define the dictionary "history" that will collect key performance indicators during training
 epoch=[]
 train_loss=[]
 valid_loss=[]
-train_accuracy=[]
-valid_accuracy=[]
+train_accuracy_complete=[]
+valid_accuracy_complete=[]
 
 best_val_loss = -1000000000000
-early_stopping_patience = 3
+early_stopping_patience = 5
 epochs_without_improvement = 0
 
 # Measure time for training
 from datetime import datetime
 start_time = datetime.now()
 
-print("Training…", flush=True)
 # Loop on epochs
 for e in range(epochs):
     
@@ -158,13 +157,9 @@ for e in range(epochs):
         #print("prediction = ", prediction[0].shape)
         prediction = prediction[0][:,0,:]
         #print("output = ", prediction.shape)
-        prediction_probs = nn.functional.softmax(prediction, dim=-1)
-        predicted_classes = torch.argmax(prediction_probs, dim=-1)
-        #print("prediction = ", prediction)
-        #print("Y = ", y, "predicted_classes = ", predicted_classes)
-        #loss1 = criterion(predicted_classes.float(), y.float())
-        #print("loss1 = ", loss1)
-        loss = criterion(prediction_probs, y)
+        #prediction_probs = nn.functional.softmax(prediction, dim=-1)
+        #predicted_classes = torch.argmax(prediction_probs, dim=-1)
+        loss = criterion(prediction, y)
         #print("loss = ", loss)
         # Adjust the parameters of the model
         optimizer.zero_grad()
@@ -184,46 +179,46 @@ for e in range(epochs):
     model.eval()
     valid_loss_sum = 0.0
     valid_accuracy = []
-    for step, batch in enumerate(val_dataloader):
-        X = batch[0].to(device)
-        input_mask = batch[1].to(device)
-        y = batch[2].to(device)
+    with torch.no_grad():
+        for step, batch in enumerate(val_dataloader):
+            X = batch[0].to(device)
+            input_mask = batch[1].to(device)
+            y = batch[2].to(device)
          
-        prediction = model(X, input_mask)
-        prediction = prediction[0][:,0,:]
-        #print("output = ", prediction.shape)
-        prediction_probs = nn.functional.softmax(prediction, dim=-1)
-        predicted_classes = torch.argmax(prediction_probs, dim=-1)
-        #print("prediction2 = ", prediction)
-        #print("Y2 = ", y, "predicted_classes = ", predicted_classes, flush=True)
-        #loss1 = criterion(predicted_classes.float(), y.float())
-        #print("loss2 = ", loss1)
-        loss = criterion(prediction_probs, y)
-        #print("loss = ", loss)
+            prediction = model(X, input_mask)
+            prediction = prediction[0][:,0,:]
+            #print("output = ", prediction.shape)
+            prediction_probs = nn.functional.softmax(prediction, dim=-1)
+            predicted_classes = torch.argmax(prediction_probs, dim=-1)
+            #print("prediction2 = ", prediction)
+            #print("Y2 = ", y, "predicted_classes = ", predicted_classes)
+            loss = criterion(prediction, y)
+            #print("loss = ", loss)
 
-        valid_loss_sum += loss.item()
+            valid_loss_sum += loss.item()
         
-        prediction_index = prediction.argmax(axis=1)
-        accuracy = (prediction_index==y)
-        valid_accuracy += accuracy
+            prediction_index = prediction.argmax(axis=1)
+            accuracy = (prediction_index==y)
+            valid_accuracy += accuracy
+            
     valid_accuracy_value = (sum(valid_accuracy) / len(valid_accuracy)).item()
     
     # Populate history
     epoch.append(e+1)
     train_loss.append(train_loss_sum / len(train_dataloader))
     valid_loss.append(valid_loss_sum / len(val_dataloader))
-    train_accuracy.append(train_accuracy_value)
-    valid_accuracy.append(valid_accuracy_value)    
+    train_accuracy_complete.append(train_accuracy_value)
+    valid_accuracy_complete.append(valid_accuracy_value)    
         
-    print(f'Epoch {e+1} \t\t Training Loss: {train_loss_sum / len(train_dataloader) :10.3f} \t\t Validation Loss: {valid_loss_sum / len(val_dataloader) :10.3f}', flush=True)
-    print(f'\t\t Training Accuracy: {train_accuracy_value :10.3%} \t\t Validation Accuracy: {valid_accuracy_value :10.3%}', flush=True)
+    print(f'Epoch {e+1} \t\t Training Loss: {train_loss_sum / len(train_dataloader) :10.3f} \t\t Validation Loss: {valid_loss_sum / len(val_dataloader) :10.3f}', flush = True)
+    print(f'\t\t Training Accuracy: {train_accuracy_value :10.3%} \t\t Validation Accuracy: {valid_accuracy_value :10.3%}', flush = True)
     
     # Vérification de l'amélioration
     #print("best = ", best_val_loss)
     #print("valid_accuracy_value  = ", valid_loss_sum)
-    if e == 0 or valid_loss_sum < best_val_loss:
+    if e == 0 or (valid_loss_sum / len(val_dataloader)) < best_val_loss:
         # Si la perte de validation s'améliore, enregistrez le modèle et réinitialisez le compteur
-        best_val_loss = valid_loss_sum
+        best_val_loss = np.mean(valid_loss_sum / len(val_dataloader))
         epochs_without_improvement = 0
         torch.save(model.state_dict(), "./sentiments.pt")
     else:
@@ -232,13 +227,23 @@ for e in range(epochs):
 
     # Vérification de l'arrêt anticipé
     if epochs_without_improvement >= early_stopping_patience:
-        print(f"Arrêt anticipé a l'époch {e+1}, après {early_stopping_patience} époques sans amélioration.", flush=True)
+        print(f"Arrêt anticipé après {e+1} époques sans amélioration.", flush = True)
         break
 
 # Measure time for training
 end_time = datetime.now()
-training_time_pt = (end_time - start_time).total_seconds()    
-print("Finished.", flush=True)
+training_time_pt = (end_time - start_time).total_seconds()
+print(training_time_pt, flush = True)
+
+
+
+
+
+
+
+
+
+
 
 
 
