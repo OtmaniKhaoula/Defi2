@@ -131,3 +131,14 @@ def preprocessing_test(dict_comments):
         new_dict_comments[key] = " ".join(clean_words)
     
     return new_dict_comments
+
+def gen_test_review_grades(corpus):
+    key_dict = {}
+    review_grades = {}
+    for key in corpus:
+        review_grades[key] = len(key_dict)
+        print("LEN dict", len(key_dict))
+        key_dict[len(key_dict)] = key
+        
+    np.save(f"{path}/processed_data/test/keys.npy", key_dict)
+    return review_grades

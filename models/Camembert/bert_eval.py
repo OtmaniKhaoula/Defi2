@@ -101,7 +101,6 @@ def predict(reviews_and_ids, model=model):
             for el in predictions_with_ids:
                 to_save += f"{el[0]} {str(float(int(el[1])+1)/float(2)).replace('.', ',')}\n"
 
-            print(to_save, flush=True)
             del input_ids, attention_mask, ids
 
         return predictions_with_ids, to_save

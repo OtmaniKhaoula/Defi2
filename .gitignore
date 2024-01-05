@@ -13,3 +13,6 @@ glove/*
 *.npy
 *dataset
 *.xml
+runs/*
+*.bin
+*.safetensors

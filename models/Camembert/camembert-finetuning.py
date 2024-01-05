@@ -65,17 +65,24 @@ print("Loading model…", flush=True)
 
 # On prend la version pre-entrainee de DistilcamemBERT sur les sentiments
 model = CamembertForSequenceClassification.from_pretrained(text).to(device)
+
+print(model, flush=True)
+
+print(model.classifier, flush=True)
+exit()
 # Appliquez la fonction ReLU
 model.classifier.out_proj = nn.Linear(in_features=768, out_features=10, bias=True).to(device)
+
+
 # Ajoutez la couche ReLU entre les couches linéaires
-new_structure = nn.Sequential(
+"""new_structure = nn.Sequential(
     nn.Dropout(p=0.2, inplace=False),
     nn.Linear(in_features=768, out_features=768, bias=True),
     nn.ReLU(),
     nn.Linear(in_features=768, out_features=10, bias=True)
 ).to(device)
 
-model.classifier = new_structure
+model.classifier = new_structure"""
 
 # Let's create a sample of size 5 from the training data
 #sample = train_dataset[0:5]
@@ -108,7 +115,7 @@ for param in model.parameters():
 #print("Number of parameters: ", total_params)
 #print("Number of trainable parameters: ", total_params_trainable)
 
-for param in model.classifier.parameters():
+for param in model.classifier.out_proj.parameters():
     param.requires_grad = True
   
 # Regardons le nombre de paramètres (entraînables et non entraînables) :
@@ -147,6 +154,8 @@ for e in range(epochs):
     
     # Loop on batches
     for step, batch in enumerate(train_dataloader):
+        optimizer.zero_grad()
+
         X = batch[0].to(device)
         input_mask = batch[1].to(device)
         y = batch[2].to(device)
@@ -154,21 +163,30 @@ for e in range(epochs):
         # Get prediction & loss
         #print("Shape de X = ", X.shape)
         prediction = model(X, input_mask)
-        #print("prediction = ", prediction[0].shape)
+        # Get logits from the output
+        logits = prediction.logits
+
+        # Apply softmax to get probabilities
+        probabilities = torch.nn.functional.softmax(logits, dim=1)
+
+        # Get the predicted class (class with the highest probability)
+        prediction_index = torch.argmax(probabilities, dim=1)
+        """#print("prediction = ", prediction[0].shape)
+        print(prediction, flush=True)
+        print(prediction.shape, flush=True)
         prediction = prediction[0][:,0,:]
         #print("output = ", prediction.shape)
         #prediction_probs = nn.functional.softmax(prediction, dim=-1)
-        #predicted_classes = torch.argmax(prediction_probs, dim=-1)
-        loss = criterion(prediction, y)
+        #predicted_classes = torch.argmax(prediction_probs, dim=-1)"""
+        loss = criterion(probabilities, y)
         #print("loss = ", loss)
         # Adjust the parameters of the model
-        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         
         train_loss_sum += loss.item()
         
-        prediction_index = prediction.argmax(axis=1)
+        #prediction_index = prediction.argmax(axis=1)
         accuracy = (prediction_index==y)
         train_accuracy += accuracy
     
@@ -186,18 +204,19 @@ for e in range(epochs):
             y = batch[2].to(device)
          
             prediction = model(X, input_mask)
-            prediction = prediction[0][:,0,:]
+            logits = prediction.logits
+
+            #prediction = prediction[0][:,0,:]
             #print("output = ", prediction.shape)
-            prediction_probs = nn.functional.softmax(prediction, dim=-1)
-            predicted_classes = torch.argmax(prediction_probs, dim=-1)
+            prediction_probs = nn.functional.softmax(logits, dim=-1)
+            prediction_index = torch.argmax(prediction_probs, dim=-1)
             #print("prediction2 = ", prediction)
             #print("Y2 = ", y, "predicted_classes = ", predicted_classes)
-            loss = criterion(prediction, y)
+            loss = criterion(prediction_probs, y)
             #print("loss = ", loss)
 
             valid_loss_sum += loss.item()
         
-            prediction_index = prediction.argmax(axis=1)
             accuracy = (prediction_index==y)
             valid_accuracy += accuracy
             
@@ -220,7 +239,7 @@ for e in range(epochs):
         # Si la perte de validation s'améliore, enregistrez le modèle et réinitialisez le compteur
         best_val_loss = np.mean(valid_loss_sum / len(val_dataloader))
         epochs_without_improvement = 0
-        torch.save(model.state_dict(), "./sentiments-batch256-150000train.pt")
+        torch.save(model.state_dict(), "./sentiments-oonly_out-proj=True.pt")
     else:
         # Sinon, incrémentez le compteur
         epochs_without_improvement += 1
@@ -234,7 +253,6 @@ for e in range(epochs):
 end_time = datetime.now()
 training_time_pt = (end_time - start_time).total_seconds()
 print(training_time_pt, flush = True)
-
 
 
 

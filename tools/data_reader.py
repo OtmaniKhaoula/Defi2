@@ -49,10 +49,12 @@ def gen_dicts(test=False):
 
 
     cleaned_corpus = data_processing.preprocessing_text(corpus)
+
+    if test:
+        reviews_grades = data_processing.gen_test_review_grades(corpus)
     #fast_text = data_processing.preprocessing_fasttext(corpus, reviews_grades, reviews_users, reviews_movie, file)
 
-    if not test:
-        np.save(f"{path}/processed_data/{file}/movie_grades.npy", movie_grades)
+    np.save(f"{path}/processed_data/{file}/movie_grades.npy", movie_grades)
     np.save(f"{path}/processed_data/{file}/reviews_movie.npy", reviews_movie)
     np.save(f"{path}/processed_data/{file}/reviews_grades.npy", reviews_grades)
     np.save(f"{path}/processed_data/{file}/reviews_users.npy", reviews_users)
