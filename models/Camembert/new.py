@@ -14,7 +14,7 @@ sys.path.append(directory)
 import config
 path = config.paths['url']
 
-writer = SummaryWriter("test_trainer2")
+writer = SummaryWriter("test_trainer6")
 
 if torch.cuda.is_available():
     print("GPU disponible!")
@@ -31,7 +31,7 @@ torch.cuda.empty_cache()
 
 reviews_grades_train = np.load(f"{path}/processed_data/train/reviews_grades.npy", allow_pickle=True).item()
 reviews_grades_train = {key: value * 2 - 1 for key, value in reviews_grades_train.items()}
-comments_train = np.load(f"{path}/processed_data/train/comments.npy", allow_pickle=True).item()
+comments_train = np.load(f"{path}/processed_data/train/comments_meta.npy", allow_pickle=True).item()
 df_comments_train = pd.DataFrame(list(comments_train.items()), columns=['id_reviews', 'text'])
 df_reviews_grades_train = pd.DataFrame(list(reviews_grades_train.items()), columns=['id_reviews', 'labels'])
 df_reviews_grades_train["labels"] = df_reviews_grades_train["labels"].astype(int)
@@ -50,12 +50,12 @@ data_train = data_train[data_train.astype(str).applymap(lambda x: x.strip() != "
 # Reset index if needed
 data_train.reset_index(drop=True, inplace=True)
 
-data_train = data_train.groupby('labels').apply(lambda x: x.sample(n=15000)).reset_index(drop=True)
+#data_train = data_train.groupby('labels').apply(lambda x: x.sample(n=15)).reset_index(drop=True)
 
 # Données dev
 reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades.npy", allow_pickle=True).item()
 reviews_grades_dev = {key: value * 2 - 1 for key, value in reviews_grades_dev.items()}
-comments_dev = np.load(f"{path}/processed_data/dev/comments.npy", allow_pickle=True).item()
+comments_dev = np.load(f"{path}/processed_data/dev/comments_meta.npy", allow_pickle=True).item()
 df_comments_dev = pd.DataFrame(list(comments_dev.items()), columns=['id_reviews', 'text'])
 df_reviews_grades_dev = pd.DataFrame(list(reviews_grades_dev.items()), columns=['id_reviews', 'labels'])
 df_reviews_grades_dev["labels"] = df_reviews_grades_dev["labels"].astype(int)
@@ -74,7 +74,7 @@ data_dev = data_dev[data_dev.astype(str).applymap(lambda x: x.strip() != "")]
 # Reset index if needed
 data_dev.reset_index(drop=True, inplace=True)
 
-data_dev = data_dev.groupby('labels').apply(lambda x: x.sample(n=150)).reset_index(drop=True)
+#data_dev = data_dev.groupby('labels').apply(lambda x: x.sample(n=150)).reset_index(drop=True)
 
 train_dataset = Dataset.from_pandas(data_train[['text', 'labels']])
 dev_dataset = Dataset.from_pandas(data_dev[['text', 'labels']])
@@ -100,10 +100,10 @@ print(type(dev_dataset))
 model = AutoModelForSequenceClassification.from_pretrained("camembert-base", num_labels=10)
 
 training_args = TrainingArguments(
-    output_dir=f"{path}/test_trainer2/",
-    num_train_epochs=5,
-    per_device_train_batch_size=128,
-    per_device_eval_batch_size=128,
+    output_dir=f"{path}/test_trainer-all/",
+    num_train_epochs=10,
+    per_device_train_batch_size=64,
+    per_device_eval_batch_size=64,
     evaluation_strategy="epoch",
     logging_strategy="steps",
     logging_steps=10,
@@ -134,4 +134,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model(f"path/3gpu/")
+trainer.save_model(f"path/6gpu/")

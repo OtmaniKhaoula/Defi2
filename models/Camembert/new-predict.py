@@ -31,7 +31,7 @@ torch.cuda.empty_cache()
 reviews_grades_test = np.load(f"{path}/processed_data/test/reviews_grades.npy", allow_pickle=True).item()
 test_keys = np.load(f"{path}/processed_data/test/keys.npy", allow_pickle=True).item()
 #reviews_grades_test = {key: value * 2 - 1 for key, value in reviews_grades_test.items()}
-comments_test = np.load(f"{path}/processed_data/test/comments.npy", allow_pickle=True).item()
+comments_test = np.load(f"{path}/processed_data/test/comments_meta.npy", allow_pickle=True).item()
 df_comments_test = pd.DataFrame(list(comments_test.items()), columns=['id_reviews', 'text'])
 df_reviews_grades_test = pd.DataFrame(list(reviews_grades_test.items()), columns=['id_reviews', 'keys'])
 df_reviews_grades_test["keys"] = df_reviews_grades_test["keys"].astype(int)
@@ -53,9 +53,18 @@ data_test.reset_index(drop=True, inplace=True)
 data_test = data_test.groupby('labels').apply(lambda x: x.sample(n=32)).reset_index(drop=True)"""
 
 # Données dev
-reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades.npy", allow_pickle=True).item()
+reviews_grades_dev = np.load(f"{path}/processed_data/train/reviews_grades.npy", allow_pickle=True).item()
 reviews_grades_dev = {key: value * 2 - 1 for key, value in reviews_grades_dev.items()}
-comments_dev = np.load(f"{path}/processed_data/dev/comments.npy", allow_pickle=True).item()
+comments_dev = np.load(f"{path}/processed_data/train/comments_meta.npy", allow_pickle=True).item()
+
+"""l = 0
+for key in comments_dev:
+    print("lo", comments_dev[key], flush=True)
+    if l == 10:
+        break
+    l += 1
+exit()"""
+
 df_comments_dev = pd.DataFrame(list(comments_dev.items()), columns=['id_reviews', 'text'])
 df_reviews_grades_dev = pd.DataFrame(list(reviews_grades_dev.items()), columns=['id_reviews', 'labels'])
 df_reviews_grades_dev["labels"] = df_reviews_grades_dev["labels"].astype(int)
@@ -97,7 +106,7 @@ test_dataset = tokenized_datasets["test"]
 dev_dataset = tokenized_datasets["dev"]
 print(type(dev_dataset))
 
-model = AutoModelForSequenceClassification.from_pretrained(f"{path}/test_trainer/checkpoint-9376/", num_labels=10, local_files_only=True)
+model = AutoModelForSequenceClassification.from_pretrained(f"{path}/test_trainer6/checkpoint-10406", num_labels=10, local_files_only=True)
 
 training_args = TrainingArguments(
     output_dir="test_trainer",
@@ -146,7 +155,7 @@ for i in range(len(predictions)):
     grade = predictions[i] + 1
     to_save += f"{df_comments_test['id_reviews'][i]} {str(float(grade)/float(2)).replace('.', ',')}\n"
         
-target = open("../../predictions/Camembert-base-predictions-2.txt", "w")
+target = open("../../predictions/Camembert-base-predictions-withdev-9.txt", "w")
 target.write(to_save)
 target.close()
 

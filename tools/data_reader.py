@@ -22,19 +22,23 @@ reviews_users = {}
 reviews_movie = {}
 movie_grades = {}
 corpus = {}
+corpus_meta = {}
+
+meta = np.load(f"{path}/processed_data/{file}/movie_metadata.npy", allow_pickle=True).item()
+
 
 def gen_dicts(test=False):
     for comment in root.findall("comment"):
         review_id = comment.find('review_id').text
-        if not test:
-            note = float(comment.find('note').text.replace(',', '.'))
+        """if not test:
+            note = float(comment.find('note').text.replace(',', '.'))"""
         commentaire = comment.find('commentaire').text
         movie_id = comment.find('movie').text
-        user_id = comment.find('user_id').text
+        """user_id = comment.find('user_id').text"""
 
 
         #map review with it's grade
-        if not test:
+        """ if not test:
             reviews_grades[review_id] = note
 
             #map movie with grades
@@ -45,10 +49,16 @@ def gen_dicts(test=False):
 
         reviews_movie[review_id] = movie_id
         reviews_users[review_id] = user_id
-        corpus[review_id] = commentaire
+        corpus[review_id] = commentaire"""
+
+        if commentaire == None:
+            corpus_meta[review_id] = "" + ''.join(meta[movie_id])
+        else:
+            corpus_meta[review_id] = commentaire + ''.join(meta[movie_id])
 
 
-    cleaned_corpus = data_processing.preprocessing_text(corpus)
+
+    """cleaned_corpus = data_processing.preprocessing_text(corpus)
 
     if test:
         reviews_grades = data_processing.gen_test_review_grades(corpus)
@@ -59,7 +69,8 @@ def gen_dicts(test=False):
     np.save(f"{path}/processed_data/{file}/reviews_grades.npy", reviews_grades)
     np.save(f"{path}/processed_data/{file}/reviews_users.npy", reviews_users)
     np.save(f"{path}/processed_data/{file}/comments_clean.npy", cleaned_corpus)
-    np.save(f"{path}/processed_data/{file}/comments.npy", corpus)
+    np.save(f"{path}/processed_data/{file}/comments.npy", corpus)"""
+    np.save(f"{path}/processed_data/{file}/comments_meta.npy", corpus_meta)
 
 
 def gen_test_corpus():
@@ -77,4 +88,4 @@ if not file == 'test':
     gen_dicts()
 else:
     gen_dicts(test=True)
-    gen_test_corpus()
+    #gen_test_corpus()

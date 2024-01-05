@@ -16,3 +16,4 @@ glove/*
 runs/*
 *.bin
 *.safetensors
+test_trainer*/
