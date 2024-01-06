@@ -32,8 +32,8 @@ with open("../polarity_word.txt", encoding = "latin-1") as fichier:
         # Retirer les éventuels espaces autour des parties
         ligne_tokenized = [l.strip() for l in ligne]
         ligne_tokenized[1] = ligne_tokenized[1].replace('"', '')
-        if(bool(re.search(r"\d", ligne_tokenized[1])) or not bool(re.search('[a-zA-Z]', ligne_tokenized[1])) or len(ligne_tokenized[1].split(" "))>1 or len(ligne_tokenized[1].split(">"))>1):
-            continue
+        #if(bool(re.search(r"\d", ligne_tokenized[1])) or not bool(re.search('[a-zA-Z]', ligne_tokenized[1])) or len(ligne_tokenized[1].split(" "))>1 or len(ligne_tokenized[1].split(">"))>1):
+        #    continue
         if(ligne_tokenized[2] == ligne_tokenized[4]):
             dict_emotion[ligne_tokenized[1]] = "neutre"
             continue
@@ -50,9 +50,6 @@ with open("../polarity_word.txt", encoding = "latin-1") as fichier:
 print("taille = ", len(dict_emotion))
 np.save(f"{path}/processed_data/dict_polarity.npy", dict_emotion)
 
-df = pd.DataFrame(list(dict_emotion.items()))
-df.to_csv(f"{path}/processed_data/dict_polarity.csv", encoding = "latin-1", header = False)
-
 # Ajouter les polarités dans les commentaires
 cpt = 0
 list_keyword = list(dict_emotion.keys())
@@ -61,7 +58,7 @@ for review in comments.keys():
     # Vérifier si la valeur est de type float ou None
     if isinstance(comments[review], (float, type(None))):
         continue
-        
+
     # Vérifier si la valeur est de type str
     if not isinstance(comments[review], str):
         continue
@@ -71,10 +68,13 @@ for review in comments.keys():
     modified_review = [word + " " + dict_emotion.get(word, "") if word in list_keyword else word for word in review_split]
     
     comments[review] = " ".join(modified_review)
-    print(comments[review])
+    #print(comments[review])
     
     cpt += 1
     if cpt % 100 == 0:
         print("cpt =", cpt)
-    
+    """
+    if(cpt>20):
+        break    
+    """
 np.save(f"{path}/processed_data/{file}/comments_with_polarities.npy", comments)
