@@ -278,8 +278,8 @@ if __name__ == "__main__":
     for note in list_notes:
         freq_film_bien_by_note["film"][note] = freq_words[note]["film"]/distrib_notes[note]
         freq_film_bien_by_note["bien"][note] = freq_words[note]["bien"]/distrib_notes[note]
-        freq_film_bien_by_note2["film"][note] = freq_words2[note]["film"]/distrib_notes[note]
-        freq_film_bien_by_note2["bien"][note] = freq_words2[note]["bien"]/distrib_notes[note]
+        freq_film_bien_by_note2["film"][note] = freq_words2[note]["film"]/distrib_notes2[note]
+        freq_film_bien_by_note2["bien"][note] = freq_words2[note]["bien"]/distrib_notes2[note]
         
     ######## Generating graphs ########
     graphics.graph_repartition(distrib_notes, "Répartition des notes (" + folder_to_load + ")", "Notes")
