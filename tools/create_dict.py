@@ -9,8 +9,6 @@ directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(directory)
 print("DIRECTORY", directory)
 
-file = sys.argv[1]
-
 import config
 
 path = config.paths['url']
