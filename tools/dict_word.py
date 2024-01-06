@@ -27,12 +27,6 @@ with open("../polarity_word.txt", encoding = "latin-1") as fichier:
     for ligne in fichier:
         cpt += 1
         #print("cpt = ",  cpt)
-        """        
-        if(cpt < 220000):
-            continue
-        elif(cpt > 225000):
-            break
-        """
         # Séparer la phrase par des point-virgules à l'extérieur des guillemets
         ligne = re.split(';\s*(?=(?:[^"]*"[^"]*")*[^"]*$)', ligne)
         # Retirer les éventuels espaces autour des parties
@@ -42,6 +36,12 @@ with open("../polarity_word.txt", encoding = "latin-1") as fichier:
             continue
         if(ligne_tokenized[2] == ligne_tokenized[4]):
             dict_emotion[ligne_tokenized[1]] = "neutre"
+            continue
+        elif(ligne_tokenized[3] == ligne_tokenized[4] and ligne_tokenized[3]>ligne_tokenized[2]):
+            dict_emotion[ligne_tokenized[1]] = "negatif"
+            continue
+        elif(ligne_tokenized[3] == ligne_tokenized[2] and ligne_tokenized[3]>ligne_tokenized[4]):
+            dict_emotion[ligne_tokenized[1]] = "positif"
             continue
         A = [float(element) for element in ligne_tokenized[2:]]
         idx = np.argmax(A, axis=0)
@@ -58,7 +58,12 @@ cpt = 0
 list_keyword = list(dict_emotion.keys())
 
 for review in comments.keys():
-    if isinstance(comments[review], float):
+    # Vérifier si la valeur est de type float ou None
+    if isinstance(comments[review], (float, type(None))):
+        continue
+        
+    # Vérifier si la valeur est de type str
+    if not isinstance(comments[review], str):
         continue
 
     review_split = comments[review].split(" ")
