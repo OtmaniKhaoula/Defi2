@@ -12,6 +12,6 @@ for i in range(len(grades)):
     to_save += str(ids[i].replace('\n', '')) + " " + str(float(grades[i])/float(2)).replace('.', ',') + "\n"
 
 
-target = open("../predictions/SVM-predictions.txt", "w")
+target = open("../../predictions/SVM-predictions.txt", "w")
 target.write(to_save)
 target.close()

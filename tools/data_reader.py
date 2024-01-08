@@ -18,43 +18,55 @@ tree = ET.parse(f"{path}/data/{file}.xml")
 root = tree.getroot()
 
 reviews_grades = {} #dictionnaire des review_id -> notes
+reviews_grades_da = {}
 reviews_users = {}
 reviews_movie = {}
 movie_grades = {}
 corpus = {}
 corpus_meta = {}
+corpus_meta_da = {}
 
-meta = np.load(f"{path}/processed_data/{file}/movie_metadata.npy", allow_pickle=True).item()
+meta = np.load(f"{path}/processed_data/{file}/movie_metadata2.npy", allow_pickle=True).item()
 
 
 def gen_dicts(test=False):
     for comment in root.findall("comment"):
         review_id = comment.find('review_id').text
-        """if not test:
-            note = float(comment.find('note').text.replace(',', '.'))"""
+        if not test:
+            note = float(comment.find('note').text.replace(',', '.'))
+            reviews_grades_da[review_id] = note
+            reviews_grades[review_id] = note
+
+
         commentaire = comment.find('commentaire').text
         movie_id = comment.find('movie').text
         """user_id = comment.find('user_id').text"""
+        
 
-
-        #map review with it's grade
-        """ if not test:
-            reviews_grades[review_id] = note
-
-            #map movie with grades
+        """#map review with it's grade
+        if not test:
+           #map movie with grades
             if movie_id in movie_grades:
                 movie_grades[movie_id].append(note)
             else:
                 movie_grades[movie_id] = [note]
 
         reviews_movie[review_id] = movie_id
-        reviews_users[review_id] = user_id
-        corpus[review_id] = commentaire"""
+        reviews_users[review_id] = user_id"""
+        corpus[review_id] = commentaire
+
 
         if commentaire == None:
             corpus_meta[review_id] = "" + ''.join(meta[movie_id])
+            corpus_meta_da[review_id] = "" + ''.join(meta[movie_id])
         else:
             corpus_meta[review_id] = commentaire + ''.join(meta[movie_id])
+            corpus_meta_da[review_id] = commentaire + ''.join(meta[movie_id])
+
+            if (note == 1.5 or int(note) == 1) and not test:
+                corpus_meta_da[review_id+"-da"] = commentaire + ''.join(meta[movie_id]) #we double the instances of class 1,5 
+                reviews_grades_da[review_id+"-da"] = note
+
 
 
 
@@ -70,9 +82,16 @@ def gen_dicts(test=False):
     np.save(f"{path}/processed_data/{file}/reviews_users.npy", reviews_users)
     np.save(f"{path}/processed_data/{file}/comments_clean.npy", cleaned_corpus)
     np.save(f"{path}/processed_data/{file}/comments.npy", corpus)"""
-    np.save(f"{path}/processed_data/{file}/comments_meta.npy", corpus_meta)
+    #np.save(f"{path}/processed_data/{file}/comments_meta2.npy", corpus_meta)
+    np.save(f"{path}/processed_data/{file}/comments_meta-da2.npy", corpus_meta_da)
+    np.save(f"{path}/processed_data/{file}/reviews_grades-da2.npy", reviews_grades_da)
+    print("corp:", len(corpus_meta_da))
+    print("rev:", len(reviews_grades_da))
 
-
+    """for key in corpus_meta:
+        print(corpus_meta[key], flush=True)
+        break"""
+    
 def gen_test_corpus():
     for comment in root.findall("comment"):
         review_id = comment.find('review_id').text

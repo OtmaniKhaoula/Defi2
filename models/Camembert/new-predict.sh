@@ -6,7 +6,7 @@
 #SBATCH --gpus-per-task=1
 #SBATCH --mem=100G
 #SBATCH --time=20:00:00
-#SBATCH --nodelist="apollon"
+#SBATCH --nodelist="eris"
 
 source /etc/profile.d/conda.sh
 conda activate defi2

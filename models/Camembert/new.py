@@ -14,7 +14,8 @@ sys.path.append(directory)
 import config
 path = config.paths['url']
 
-writer = SummaryWriter("test_trainer6")
+writer = SummaryWriter("test_trainer-all-1e5-da2")
+print("WITH DA2", flush=True)
 
 if torch.cuda.is_available():
     print("GPU disponible!")
@@ -29,9 +30,9 @@ torch.cuda.empty_cache()
 
 # Données apprentissage
 
-reviews_grades_train = np.load(f"{path}/processed_data/train/reviews_grades.npy", allow_pickle=True).item()
+reviews_grades_train = np.load(f"{path}/processed_data/train/reviews_grades-da2.npy", allow_pickle=True).item()
 reviews_grades_train = {key: value * 2 - 1 for key, value in reviews_grades_train.items()}
-comments_train = np.load(f"{path}/processed_data/train/comments_meta.npy", allow_pickle=True).item()
+comments_train = np.load(f"{path}/processed_data/train/comments_meta-da2.npy", allow_pickle=True).item()
 df_comments_train = pd.DataFrame(list(comments_train.items()), columns=['id_reviews', 'text'])
 df_reviews_grades_train = pd.DataFrame(list(reviews_grades_train.items()), columns=['id_reviews', 'labels'])
 df_reviews_grades_train["labels"] = df_reviews_grades_train["labels"].astype(int)
@@ -53,9 +54,9 @@ data_train.reset_index(drop=True, inplace=True)
 #data_train = data_train.groupby('labels').apply(lambda x: x.sample(n=15)).reset_index(drop=True)
 
 # Données dev
-reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades.npy", allow_pickle=True).item()
+reviews_grades_dev = np.load(f"{path}/processed_data/dev/reviews_grades-da2.npy", allow_pickle=True).item()
 reviews_grades_dev = {key: value * 2 - 1 for key, value in reviews_grades_dev.items()}
-comments_dev = np.load(f"{path}/processed_data/dev/comments_meta.npy", allow_pickle=True).item()
+comments_dev = np.load(f"{path}/processed_data/dev/comments_meta-da2.npy", allow_pickle=True).item()
 df_comments_dev = pd.DataFrame(list(comments_dev.items()), columns=['id_reviews', 'text'])
 df_reviews_grades_dev = pd.DataFrame(list(reviews_grades_dev.items()), columns=['id_reviews', 'labels'])
 df_reviews_grades_dev["labels"] = df_reviews_grades_dev["labels"].astype(int)
@@ -99,9 +100,10 @@ print(type(dev_dataset))
 
 model = AutoModelForSequenceClassification.from_pretrained("camembert-base", num_labels=10)
 
+output_d = f"{path}/test_trainer-all-1e5-da2/"
 training_args = TrainingArguments(
-    output_dir=f"{path}/test_trainer-all/",
-    num_train_epochs=10,
+    output_dir=output_d,
+    num_train_epochs=5,
     per_device_train_batch_size=64,
     per_device_eval_batch_size=64,
     evaluation_strategy="epoch",
@@ -134,4 +136,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.save_model(f"path/6gpu/")
+trainer.save_model(f"path/all-1e5-da2/")

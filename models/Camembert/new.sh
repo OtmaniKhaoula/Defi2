@@ -5,7 +5,7 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-task=1
 #SBATCH --mem=100G
-#SBATCH --time=20:00:00
+#SBATCH --time=50:00:00
 #SBATCH --nodelist="apollon"
 
 source /etc/profile.d/conda.sh

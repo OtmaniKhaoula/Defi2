@@ -4,12 +4,14 @@ import os
 import sys 
 import pandas as pd 
 import re
+from tqdm import tqdm
 
 directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(directory)
 print("DIRECTORY", directory)
 
 file = sys.argv[1]
+print("file", file, flush=True)
 
 import config
 
@@ -20,30 +22,22 @@ comments = np.load(f"{path}/processed_data/{file}/comments.npy", allow_pickle=Tr
 dict_emotion = np.load(f"{path}/processed_data/dict_polarity.npy", allow_pickle=True).item()
 
 # Ajouter les polarités dans les commentaires
-cpt = 0
-list_keyword = list(dict_emotion.keys())
 
-for review in comments.keys():
-    # Vérifier si la valeur est de type float ou None
-    if isinstance(comments[review], (float, type(None))):
+for review, comment in comments.items():
+    if not isinstance(comment, str) or not comment:
         continue
 
-    # Vérifier si la valeur est de type str
-    if not isinstance(comments[review], str):
-        continue
-
-    review_split = comments[review].split(" ")
-    
-    modified_review = [word + " " + dict_emotion.get(word, "") if word in list_keyword else word for word in review_split]
+    modified_review = [word + " " + dict_emotion.get(word, "") if word in dict_emotion else word for word in comment.split(" ")]
     
     comments[review] = " ".join(modified_review)
-    #print(comments[review])
-    
-    cpt += 1
-    if cpt % 100 == 0:
-        print("cpt =", cpt)
-    """
-    if(cpt>20):
-        break    
-    """
-np.save(f"{path}/processed_data/{file}/comments_with_polarities.npy", comments)
+
+
+savfile = f"{path}/processed_data/{file}/comments_with_polarities.npy"
+np.save(savfile, comments)
+
+for key in comments:
+    print(comments[key], flush=True)
+    break
+
+
+print("savfile", savfile, flush=True)

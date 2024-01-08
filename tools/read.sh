@@ -14,5 +14,4 @@ conda activate defi2
 SCRIPT_DIR="/users/kotmani/Defi2/tools/"
 
 python3 $SCRIPT_DIR/data_reader.py train
-python3 $SCRIPT_DIR/data_reader.py test
 python3 $SCRIPT_DIR/data_reader.py dev

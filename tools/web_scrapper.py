@@ -10,7 +10,7 @@ sys.path.append(directory)
 import config
 
 path = config.paths['url']
-#test_movies = np.load(f"{path}/processed_data/test/reviews_movie.npy", allow_pickle=True).item()
+test_movies = np.load(f"{path}/processed_data/test/reviews_movie.npy", allow_pickle=True).item()
 dev_movies = np.load(f"{path}/processed_data/dev/reviews_movie.npy", allow_pickle=True).item()
 train_movies = np.load(f"{path}/processed_data/train/reviews_movie.npy", allow_pickle=True).item()
 
@@ -24,10 +24,10 @@ def scrape_website(url):
     data = ""
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        metadonnes = soup.find_all('div', class_="meta-body-item meta-body-info")
+        metadonnes = soup.find_all('div', class_="meta-body-item")
 
         regex_alphabet = re.compile('[a-zA-Z]')
-
+ 
         data = ""
         for donne in metadonnes:
             words = donne.text.strip().split('\n')
@@ -35,7 +35,7 @@ def scrape_website(url):
             for w in words:
                 if regex_alphabet.search(w):
                     data += w + " "
-        
+
     return data
 
 
@@ -53,9 +53,11 @@ def get_movies_metadata(file, movies):
                 checked_movies.append(movieid)
 
     
-    np.save(f"{path}/processed_data/{file}/movie_metadata.npy", movieid_metadata)
-    print(movieid_metadata)
+    np.save(f"{path}/processed_data/{file}/movie_metadata2.npy", movieid_metadata)
+    #print(movieid_metadata)
  
 get_movies_metadata("dev", dev_movies)
+get_movies_metadata("train", train_movies)
+get_movies_metadata("test", test_movies)
 
 print("finished")
