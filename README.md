@@ -1,6 +1,6 @@
 # Defi2
 
-Pour générer les dictionnaires:
+Pour générer les dictionnaires avec les données mises en forme:
 - Créer un dossier data et stocker les fichiers d'entraînements, de développement et de test
 - Créer un dossier processed_data où l'ensemble des nouveaux fichiers seront stockés
 - Exécuter le fichier data_reader.py dans le dossier tools
